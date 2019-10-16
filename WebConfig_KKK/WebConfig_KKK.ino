@@ -48,7 +48,7 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 #include <EEPROM.h>
-
+#include "arduino_secret.h"
 #include "helpers.h"
 #include "global.h"
 #include "ds18b20.h"
@@ -93,8 +93,8 @@ void setup ( void ) {
 	if (!ReadConfig())
 	{
 		// DEFAULT CONFIG
-		config.ssid = "LEDE"; //belaidžio tinklo pavadinimas
-		config.password = "12345678"; //slaptažodis
+		config.ssid = ssid; //belaidžio tinklo pavadinimas
+		config.password = password; //slaptažodis
 		config.dhcp = true;
     config.IP[0] = 192;config.IP[1] = 168;config.IP[2] = 8;config.IP[3] = 111;
     config.DNS[0] = 1;config.DNS[1] = 1;config.DNS[2] = 1;config.DNS[3] = 1;
@@ -164,11 +164,14 @@ void setup ( void ) {
 	{
 		WiFi.mode(WIFI_AP_STA);
 		WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-	}
-	else
-	{
+  Serial.print("PT adresas: " + WiFi.softAPIP().toString()+ "\n");
+  Serial.print("PT vardas: " + String(ACCESS_POINT_NAME) + "\n");
+  Serial.print("Slaptažodis: " + String(ACCESS_POINT_PASSWORD) + "\n\n");
+	}	else	{
 		WiFi.mode(WIFI_STA);
-	}
+  Serial.println("Statinis adresas: " + WiFi.localIP().toString()+ "\n");
+  Serial.print("SSID'as: " + String(config.ssid) + "\n");
+  Serial.print("Slaptažodis: " + String(config.password) + "\n\n");	}
 
 	ConfigureWifi();
 	

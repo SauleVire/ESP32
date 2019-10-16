@@ -1,7 +1,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-String FIRMWARE_VERSION = "v2.0";
+String FIRMWARE_VERSION = "v0.1";
 /* 2019_04_16 19:59 v1.1 Programos naujinimas, pataisyti užšalimo tikrinimo, temperatūrų matavimo algoritmai,
 pridėtas nuorinimas*/
 /*2019_09_25 v2.0 pridėta akumuliacinės talpos, boilerio, KKK valdymas*/
@@ -48,8 +48,8 @@ struct strConfig {
   byte LED_G;
   byte LED_B;
 /* ********** kintamieji saulės kolektoriui ******************* */
- float k_skirtumas;
- long k_intervalas;
+ byte k_skirtumas;
+ byte k_intervalas;
  boolean k_uzsalimas;
  boolean k_nuorinimas;
 
@@ -190,8 +190,6 @@ String FreezingState = "OFF";
 */
 // viskas konfigūruojama per naršyklę!
 //
-//const char* emoncmshost = "xxx"; //Enter the EmonCMS Server address here
-//const char* apikey = "xxx"; //Enter api key here
 /*
 **
 ** CONFIGURATION HANDLING
@@ -202,7 +200,14 @@ void ConfigureWifi()
   Serial.println("Configuring Wifi");
   WiFi.begin (config.ssid.c_str(), config.password.c_str());
   WiFi.setHostname("SauleVire");
-  Serial.println("DHCP adresas: " + WiFi.localIP().toString()+ "\n");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(WiFi.status());
+  }
+  Serial.print("\nWiFi connected   IP: "); Serial.println(WiFi.localIP());
+  
+//  delay(5000);
+//  WiFi.disconnect(true);
   if (!config.dhcp)
   {
   WiFi.config(IPAddress(config.IP[0],config.IP[1],config.IP[2],config.IP[3] ),  IPAddress(config.DNS[0],config.DNS[1],config.DNS[2],config.DNS[3] ),  IPAddress(config.Gateway[0],config.Gateway[1],config.Gateway[2],config.Gateway[3] ) , IPAddress(config.Netmask[0],config.Netmask[1],config.Netmask[2],config.Netmask[3] ));
@@ -214,7 +219,7 @@ void ConfigureWifi()
 
 void WriteConfig()
 {   Serial.println("Writing Config");
-  EEPROM.write(0,'C');  EEPROM.write(1,'f');  EEPROM.write(2,'g');
+  EEPROM.write(0,'C');  EEPROM.write(1,'F');  EEPROM.write(2,'G');
   EEPROM.commit();
 }
 
@@ -282,39 +287,39 @@ void ReadConfigGeneralInfo()
     config.TurnOffMinute = EEPROM.read(462);}
         
 void WriteConfigDS18b20()
-{ EEPROM.write(449,config.Kid);
-  EEPROM.write(450,config.Bid);
-  EEPROM.write(451,config.OLid);
-  EEPROM.write(452,config.OKid);
-  EEPROM.write(453,config.AAid);
-  EEPROM.write(454,config.AVid);
-  EEPROM.write(455,config.PVid);
-  EEPROM.write(456,config.KKKid);
+{ EEPROM.write(433,config.Kid);
+  EEPROM.write(434,config.Bid);
+  EEPROM.write(435,config.OLid);
+  EEPROM.write(436,config.OKid);
+  EEPROM.write(437,config.AAid);
+  EEPROM.write(438,config.AVid);
+  EEPROM.write(439,config.PVid);
+  EEPROM.write(440,config.KKKid);
     EEPROM.commit();}
 
 void ReadConfigDS18b20()
-{   config.Kid =   EEPROM.read(449);
-    config.Bid =   EEPROM.read(450);
-    config.OLid =   EEPROM.read(451);
-    config.OKid = EEPROM.read(452);
-    config.AAid = EEPROM.read(453);
-    config.AVid = EEPROM.read(454);
-    config.PVid = EEPROM.read(455);
-    config.KKKid = EEPROM.read(456);}
+{   config.Kid =   EEPROM.read(433);
+    config.Bid =   EEPROM.read(434);
+    config.OLid =   EEPROM.read(435);
+    config.OKid = EEPROM.read(436);
+    config.AAid = EEPROM.read(437);
+    config.AVid = EEPROM.read(438);
+    config.PVid = EEPROM.read(439);
+    config.KKKid = EEPROM.read(440);}
 
 void WriteConfigNTP()
-{ EEPROM.write(420,config.daylight);
-  EEPROMWritelong(424,config.Update_Time_Via_NTP_Every); // 4 Byte
-  EEPROM.write(428,config.timezone);  // 4 Byte
-  WriteStringToEEPROM(432,config.ntpServerName);//16
+{ WriteStringToEEPROM(405,config.ntpServerName);//16
+  EEPROM.write(421,config.daylight);
+  EEPROMWritelong(425,config.Update_Time_Via_NTP_Every); // 4 Byte
+  EEPROM.write(429,config.timezone);  // 4 Byte
     EEPROM.commit();}
 
 void ReadConfigNTP()
-{   config.daylight = EEPROM.read(420);
-    config.Update_Time_Via_NTP_Every = EEPROMReadlong(424); // 4 Byte
-    config.timezone = EEPROM.read(428); // 4 Byte
-    config.ntpServerName = ReadStringFromEEPROM(432);}//16
-    
+{   config.ntpServerName = ReadStringFromEEPROM(405);//16
+    config.daylight = EEPROM.read(421);
+    config.Update_Time_Via_NTP_Every = EEPROMReadlong(425); // 4 Byte
+    config.timezone = EEPROM.read(429);} // 4 Byte
+        
 void WriteConfigEmonCMS()
 { EEPROM.write(50,config.emoncmsOn);
   EEPROM.write(51,config.intervalasEmon); 
@@ -341,10 +346,10 @@ void WriteConfigCollector()
   EEPROM.write(132,config.k_uzsalimas);
   EEPROM.write(133,config.k_intervalas); //
   EEPROM.write(134,config.k_skirtumas);
-  EEPROM.write(135,config.Kp);
-  EEPROM.write(143,config.Ki);
-  EEPROM.write(151,config.Kd);
-  EEPROM.write(159,config.WindowSize);
+  EEPROM.put(142,config.Kp);
+  EEPROM.put(150,config.Ki);
+  EEPROM.put(158,config.Kd);
+  EEPROM.put(166,config.WindowSize);
         EEPROM.commit();}
 
 void ReadConfigCollector()
@@ -352,58 +357,58 @@ void ReadConfigCollector()
     config.k_uzsalimas =   EEPROM.read(132);
     config.k_intervalas = EEPROM.read(133);
     config.k_skirtumas = EEPROM.read(134);
-  EEPROM.get (135,config.Kp);
-  EEPROM.get (143,config.Ki);
-  EEPROM.get (151,config.Kd);
-  EEPROM.get(159,config.WindowSize);} //
+  EEPROM.get (142,config.Kp);
+  EEPROM.get (150,config.Ki);
+  EEPROM.get (158,config.Kd);
+  EEPROM.get(166,config.WindowSize);} //
 
 void WriteConfigBoiler()
-{  EEPROM.write(167,config.Bo_ON_T);
-  EEPROM.write(168,config.Bo_OFF_T);
-  EEPROM.write(169,config.Bo_Rankinis_ijungimas);
-  EEPROM.write(170,config.Bo_Termostatas_ON);
-  EEPROM.write(171,config.Bo_Termostato_busena);
+{  EEPROM.write(174,config.Bo_ON_T);
+  EEPROM.write(175,config.Bo_OFF_T);
+  EEPROM.write(176,config.Bo_Rankinis_ijungimas);
+  EEPROM.write(177,config.Bo_Termostatas_ON);
+  EEPROM.write(178,config.Bo_Termostato_busena);
         EEPROM.commit();}
 
 void ReadConfigBoiler()
-{   config.Bo_ON_T = EEPROM.read(167);
-    config.Bo_OFF_T = EEPROM.read(168);
-    config.Bo_Rankinis_ijungimas = EEPROM.read(169);
-    config.Bo_Termostatas_ON = EEPROM.read(170);
-    config.Bo_Termostato_busena = EEPROM.read(171);} //
+{   config.Bo_ON_T = EEPROM.read(174);
+    config.Bo_OFF_T = EEPROM.read(175);
+    config.Bo_Rankinis_ijungimas = EEPROM.read(176);
+    config.Bo_Termostatas_ON = EEPROM.read(177);
+    config.Bo_Termostato_busena = EEPROM.read(178);} //
 
 void WriteConfigHeatStorageTank()
-{ EEPROM.write(172,config.At_ON_T);
-  EEPROM.write(173,config.At_OFF_T);
-  EEPROM.write(174,config.At_Rankinis_ijungimas);
+{ EEPROM.write(179,config.At_ON_T);
+  EEPROM.write(180,config.At_OFF_T);
+  EEPROM.write(181,config.At_Rankinis_ijungimas);
         EEPROM.commit();}
         
 void ReadConfigHeatStorageTank()
-{   config.At_ON_T = EEPROM.read(172);
-    config.At_OFF_T = EEPROM.read(173);
-    config.At_Rankinis_ijungimas = EEPROM.read(174);}
+{   config.At_ON_T = EEPROM.read(179);
+    config.At_OFF_T = EEPROM.read(180);
+    config.At_Rankinis_ijungimas = EEPROM.read(181);}
             
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void WriteConfigMixingValve()
-{  EEPROM.write(175,config.PV_palaikoma_T);
-  EEPROM.write(176,config.PV_ON_T);
-  EEPROM.write(177,config.PV_OFF_T);
-  EEPROM.write(178,config.PV_tolerancijos_T);
-  EEPROM.write(182,config.PV_rankinis_ijungimas);
+{  EEPROM.write(182,config.PV_palaikoma_T);
+  EEPROM.write(183,config.PV_ON_T);
+  EEPROM.write(184,config.PV_OFF_T);
+  EEPROM.write(185,config.PV_tolerancijos_T);
+  EEPROM.write(193,config.PV_rankinis_ijungimas);
         EEPROM.commit();}
           
 void ReadConfigMixingValve()
-{ config.PV_palaikoma_T = EEPROM.read(175);
- config.PV_ON_T = EEPROM.read(176);
- config.PV_OFF_T = EEPROM.read(177);
- config.PV_tolerancijos_T = EEPROM.read(178);
- config.PV_rankinis_ijungimas = EEPROM.read(182);}
+{ config.PV_palaikoma_T = EEPROM.read(182);
+ config.PV_ON_T = EEPROM.read(183);
+ config.PV_OFF_T = EEPROM.read(184);
+ config.PV_tolerancijos_T = EEPROM.read(185);
+ config.PV_rankinis_ijungimas = EEPROM.read(193);}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 boolean ReadConfig()
 {
 
   Serial.println("Reading Configuration");
-  if (EEPROM.read(0) == 'C' && EEPROM.read(1) == 'f'  && EEPROM.read(2) == 'g' )
+  if (EEPROM.read(0) == 'C' && EEPROM.read(1) == 'F'  && EEPROM.read(2) == 'G' )
   {
     Serial.println("Configurarion Found!");
 ReadConfigGeneralInfo();
@@ -411,6 +416,7 @@ ReadConfigIP();
 ReadConfigDS18b20();
 ReadConfigNTP();
 ReadConfigEmonCMS();
+ReadConfigCollector();
 ReadConfigBoiler();
 ReadConfigHeatStorageTank();
 ReadConfigMixingValve();
