@@ -48,7 +48,7 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 #include <EEPROM.h>
-#include "arduino_secret.h"
+#include "secret.h"
 #include "helpers.h"
 #include "global.h"
 #include "ds18b20.h"
