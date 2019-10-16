@@ -8,7 +8,7 @@ const char PAGE_EXAMPLE[] PROGMEM = R"=====(
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <div class="smartphone">
   <div class="content">
-<center><span class="textas">Katilinės valdiklis</span></center><hr>
+<!-- <center><span class="textas">Katilinės valdiklis</span></center><hr> -->
 <table border="0"  cellspacing="0" cellpadding="3" style="width:300px" >
 <th colspan="2">
 <a href="/admin.html" class="myButton">Valdiklio konfigūravimas</a>
