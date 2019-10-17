@@ -48,6 +48,8 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 #include <EEPROM.h>
+#include <ESPmDNS.h>
+#include <Update.h>
 #include "secret.h"
 #include "helpers.h"
 #include "global.h"
@@ -160,22 +162,41 @@ void setup ( void ) {
 	}
 	
 	
-	if (AdminEnabled)
+/*	if (AdminEnabled)
 	{
 		WiFi.mode(WIFI_AP_STA);
 		WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-  Serial.print("PT adresas: " + WiFi.softAPIP().toString()+ "\n");
-  Serial.print("PT vardas: " + String(ACCESS_POINT_NAME) + "\n");
-  Serial.print("Slaptažodis: " + String(ACCESS_POINT_PASSWORD) + "\n\n");
+    Serial.print("PT adresas: " + WiFi.softAPIP().toString()+ "\n");
+    Serial.print("PT vardas: " + String(ACCESS_POINT_NAME) + "\n");
+    Serial.print("Slaptažodis: " + String(ACCESS_POINT_PASSWORD) + "\n\n");
 	}	else	{
-		WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA);
   Serial.println("Statinis adresas: " + WiFi.localIP().toString()+ "\n");
   Serial.print("SSID'as: " + String(config.ssid) + "\n");
   Serial.print("Slaptažodis: " + String(config.password) + "\n\n");	}
 
-	ConfigureWifi();
-	
+	ConfigureWifi();*/
 
+  if (AdminEnabled)
+  {
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
+  }
+  else
+  {
+    WiFi.mode(WIFI_STA);
+  }
+
+  ConfigureWifi();
+  
+  /*use mdns for host name resolution*/
+//  if (!MDNS.begin(host)) { //http://esp32.local
+//    Serial.println("Error setting up MDNS responder!");
+//    while (1) {
+//      delay(1000);
+//    }
+//  }
+//    Serial.println("mDNS responder started");
 	server.on ( "/", processIndex  );
 	server.on ( "/admin/filldynamicdata", filldynamicdata );
 	server.on ( "/favicon.ico",   []() { 
@@ -237,6 +258,42 @@ void setup ( void ) {
 #endif
 	  server.send ( 200, "text/html", PAGE_NotFound );   
 	  }  );
+///////////////////////////// OTAWebUpdate start /////////////////////////////
+  /*handling uploading firmware file */
+  server.on("/naujinimas", HTTP_GET, []() {
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/html", serverIndex);
+  });
+  server.on("/update", HTTP_POST, []() {
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+    delay(1000);
+    ESP.restart();
+  }, []() {
+    HTTPUpload& upload = server.upload();
+    if (upload.status == UPLOAD_FILE_START) {
+      Serial.setDebugOutput(true);
+      Serial.printf("Update: %s\n", upload.filename.c_str());
+      uint32_t maxSketchSpace = (1048576 - 0x1000) & 0xFFFFF000;
+      if (!Update.begin(maxSketchSpace)) { //start with max available size
+        Update.printError(Serial);
+      }
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+      if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+        Update.printError(Serial);
+      }
+    } else if (upload.status == UPLOAD_FILE_END) {
+      if (Update.end(true)) { //true to set the size to the current progress
+        Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+      } else {
+        Update.printError(Serial);
+      }
+      Serial.setDebugOutput(false);
+    }
+    yield();
+  });
+///////////////////////////// OTAWebUpdate finito /////////////////////////////
+
 	server.begin();
 
 //  MDNS.begin(host);
@@ -368,9 +425,9 @@ if (config.k_intervalas < 3) config.k_intervalas = 3;
 //  timer.run();
 ///////////// *    Your Code here END   * //////////////////////
 	
-	if (Refresh)  
-	{	Refresh = false;
+//	if (Refresh)  
+//	{	Refresh = false;
 //		Serial.println("Refreshing...");
 //		Serial.printf("FreeMem:%d %d:%d:%d %d.%d.%d \n",ESP.getFreeHeap() , DateTime.hour,DateTime.minute, DateTime.second, DateTime.year, DateTime.month, DateTime.day);
-	}
+//	}
 }

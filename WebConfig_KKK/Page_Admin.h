@@ -24,7 +24,7 @@ const char PAGE_AdminMainPage[] PROGMEM = R"=====(
 <div align="center"><a href="ds18b20.html" style="width:222px"  class="myButton" >Rasti DS18B20 jutikliai</a></div>
 <div align="center"><a href="priskirtiDS18b20.html" style="width:222px"  class="myButton" >Priskirti DS18B20 jutikliai</a></div>
 <div align="center"><a href="ntp.html"   style="width:222px"  class="myButton" >NTP nustatymai</a></div>
-<div align="center"><a href="update"   style="width:222px"  class="myButton" >Programos naujinimas</a></div>
+<div align="center"><a href="naujinimas"   style="width:222px"  class="myButton" >Programos naujinimas</a></div>
 <div align="center"><a href="/"   style="width:220px"  class="myButton" >Pradžia</a></div>
 
 </div></div></center>
