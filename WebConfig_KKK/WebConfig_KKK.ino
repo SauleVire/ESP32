@@ -66,7 +66,8 @@ Include the HTML, STYLE and Script "Pages"
 #include "Page_NTPsettings.h"
 #include "Page_Information.h"
 #include "Page_General.h"
-#include "PAGE_NetworkConfiguration.h"
+#include "Page_Naujinimas.h"
+#include "Page_NetworkConfiguration.h"
 #include "Page_NotFound.h"
 #include "Page_Kolektorius.h"
 #include "Page_Boileris.h"
@@ -90,7 +91,7 @@ void setup ( void ) {
 
 #ifdef Diagnostika
 	Serial.begin(115200);
-	Serial.println("Čia SauleVire.lt pradžia\n");delay(1000);
+	Serial.println("Čia SauleVire.lt pradžia\n");
 #endif
 	if (!ReadConfig())
 	{
@@ -170,58 +171,11 @@ void setup ( void ) {
     Serial.print("PT vardas: " + String(ACCESS_POINT_NAME) + "\n");
     Serial.print("Slaptažodis: " + String(ACCESS_POINT_PASSWORD) + "\n\n");
 	}	else	{
-<<<<<<< HEAD
-	WiFi.mode(WIFI_STA);
-=======
   WiFi.mode(WIFI_STA);
->>>>>>> 85d43842ab133d27374ef5d43ee1e67cee43486d
   Serial.println("Statinis adresas: " + WiFi.localIP().toString()+ "\n");
   Serial.print("SSID'as: " + String(config.ssid) + "\n");
   Serial.print("Slaptažodis: " + String(config.password) + "\n\n");	}
 
-<<<<<<< HEAD
-	ConfigureWifi();
-*/  
-//-------------------------------------------------
-    int ret;
-  // Set WiFi to station mode and disconnect from an AP if it was previously connected
-  WiFi.mode(WIFI_AP_STA);
-  SERIAL_DEBUG.begin(115200);
-  SERIAL_DEBUG.println("\r\n========== SDK Saved parameters Start"); 
-  WiFi.printDiag(SERIAL_DEBUG);
-  SERIAL_DEBUG.println("========== SDK Saved parameters End"); 
-  SERIAL_DEBUG.print("Connecting...");
-  SERIAL_DEBUG.flush();
-
-  WiFi.begin (config.ssid.c_str(), config.password.c_str());
-  WiFi.setHostname("SauleVire");
-
-  uint8_t timeout = 20; // 20 * 500 ms = 5 sec time out
-  while ( ((ret = WiFi.status()) != WL_CONNECTED) && timeout ){
-    SERIAL_DEBUG.print(".");
-    SERIAL_DEBUG.flush();
-    delay(500);
-    --timeout;
-  }
-
-  // connected ? 
-   // connected to AP ?
-  if ( WiFi.status() == WL_CONNECTED ) {
-      // Remove AP (in this case I don't need to be AP)
-      WiFi.mode(WIFI_STA);
-    } else {
-      // STA+AP Mode without connected to STA, autoconnect will search
-      // other frequencies while trying to connect, this is causing issue
-      // to AP mode, so disconnect will avoid this
-      // Disabling auto retry search channel
-      WiFi.disconnect(); 
-
-      // Start your own AP
-      WiFi.softAP("ACCESS_POINT_NAME", "ACCESS_POINT_PASSWORD");
-  }
-
-//-------------------------------------------------	
-=======
 	ConfigureWifi();*/
 
   if (AdminEnabled)
@@ -233,7 +187,6 @@ void setup ( void ) {
   {
     WiFi.mode(WIFI_STA);
   }
->>>>>>> 85d43842ab133d27374ef5d43ee1e67cee43486d
 
   ConfigureWifi();
   
@@ -306,13 +259,11 @@ void setup ( void ) {
 #endif
 	  server.send ( 200, "text/html", PAGE_NotFound );   
 	  }  );
-<<<<<<< HEAD
-=======
 ///////////////////////////// OTAWebUpdate start /////////////////////////////
   /*handling uploading firmware file */
   server.on("/naujinimas", HTTP_GET, []() {
     server.sendHeader("Connection", "close");
-    server.send(200, "text/html", serverIndex);
+    server.send(200, "text/html", PAGE_Naujinimas);
   });
   server.on("/update", HTTP_POST, []() {
     server.sendHeader("Connection", "close");
@@ -345,47 +296,14 @@ void setup ( void ) {
 ///////////////////////////// OTAWebUpdate finito /////////////////////////////
 
 	server.begin();
->>>>>>> 85d43842ab133d27374ef5d43ee1e67cee43486d
 
-
-  if (!MDNS.begin(host)) { //http://esp32.local
-    Serial.println("Error setting up MDNS responder!");
-    while (1) {
-      delay(1000);
-    }
-  }
+  MDNS.begin(host);
+  httpUpdater.setup(&server);
+  MDNS.addService("http", "tcp", 80);
 #ifdef Diagnostika
-  Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);
+  Serial.printf("\nHTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);
 #endif
-///////////////////////////// OTAWebUpdate start /////////////////////////////
-  /*handling uploading firmware file */
-  server.on("/update", HTTP_POST, []() {
-    server.sendHeader("Connection", "close");
-    server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
-    ESP.restart();
-  }, []() {
-    HTTPUpload& upload = server.upload();
-    if (upload.status == UPLOAD_FILE_START) {
-      Serial.printf("Update: %s\n", upload.filename.c_str());
-      if (!Update.begin(UPDATE_SIZE_UNKNOWN)) { //start with max available size
-        Update.printError(Serial);
-      }
-    } else if (upload.status == UPLOAD_FILE_WRITE) {
-      /* flashing firmware to ESP*/
-      if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
-        Update.printError(Serial);
-      }
-    } else if (upload.status == UPLOAD_FILE_END) {
-      if (Update.end(true)) { //true to set the size to the current progress
-        Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
-      } else {
-        Update.printError(Serial);
-      }
-    }
-  });
-///////////////////////////// OTAWebUpdate finito /////////////////////////////
 
-  server.begin();
 	tkSecond.attach(1,Second_Tick);
 	UDPNTPClient.begin(2390);  // Port for NTP receive
 

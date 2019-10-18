@@ -5,48 +5,9 @@ String FIRMWARE_VERSION = "v0.1";
 /* 2019_04_16 19:59 v1.1 Programos naujinimas, pataisyti užšalimo tikrinimo, temperatūrų matavimo algoritmai,
 pridėtas nuorinimas*/
 /*2019_09_25 v2.0 pridėta akumuliacinės talpos, boilerio, KKK valdymas*/
-
-#define SERIAL_DEBUG    Serial
+ 
 WebServer server(80);                  // The Webserver
 //ESP8266HTTPUpdateServer httpUpdater;
-
-const char* serverIndex = 
-"<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>"
-"<form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>"
-   "<input type='file' name='update'>"
-        "<input type='submit' value='Update'>"
-    "</form>"
- "<div id='prg'>progress: 0%</div>"
- "<script>"
-  "$('form').submit(function(e){"
-  "e.preventDefault();"
-  "var form = $('#upload_form')[0];"
-  "var data = new FormData(form);"
-  " $.ajax({"
-  "url: '/update',"
-  "type: 'POST',"
-  "data: data,"
-  "contentType: false,"
-  "processData:false,"
-  "xhr: function() {"
-  "var xhr = new window.XMLHttpRequest();"
-  "xhr.upload.addEventListener('progress', function(evt) {"
-  "if (evt.lengthComputable) {"
-  "var per = evt.loaded / evt.total;"
-  "$('#prg').html('progress: ' + Math.round(per*100) + '%');"
-  "}"
-  "}, false);"
-  "return xhr;"
-  "},"
-  "success:function(d, s) {"
-  "console.log('success!')" 
- "},"
- "error: function (a, b, c) {"
- "}"
- "});"
- "});"
- "</script>";
-
 
 boolean firstStart = true;                    // On firststart = true, NTP will try to get a valid time
 int AdminTimeOutCounter = 0;                  // Counter for Disabling the AdminMode
@@ -240,41 +201,11 @@ String FreezingState = "OFF";
   Serial.println("Configuring Wifi");
   WiFi.begin (config.ssid.c_str(), config.password.c_str());
   WiFi.setHostname("SauleVire");
-//-------------------------------------------------
-  int t = 0;
-  int attempt = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-<<<<<<< HEAD
-    t++;
-    // push and hold boot button after power on to skip stright to AP mode
-    if (t >= 20) {
-      Serial.print(".");
-      delay(500);
-      WiFi.disconnect();
-  WiFi.begin (config.ssid.c_str(), config.password.c_str());
-      t = 0;
-      attempt++;
-      if (attempt >= 5 ) {
-//  WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-//  Serial.print("PT adresas: " + WiFi.softAPIP().toString()+ "\n");
-//  Serial.print("PT vardas: " + String(ACCESS_POINT_NAME) + "\n");
-//  Serial.print("Slaptažodis: " + String(ACCESS_POINT_PASSWORD) + "\n\n");
-        break;
-      }
-    }
-  }
-//-------------------------------------------------
- if (WiFi.status() == WL_CONNECTED)
-{ Serial.print("\nWiFi connected   IP: "); Serial.println(WiFi.localIP());
-AdminEnabled = false;
-AdminTimeOutCounter =310;}
-  
-=======
     Serial.print("."); //Serial.print(WiFi.status());
   }
   Serial.print("\nWiFi connected   IP: "); Serial.println(WiFi.localIP());
->>>>>>> 85d43842ab133d27374ef5d43ee1e67cee43486d
   if (!config.dhcp)
   {
   WiFi.config(IPAddress(config.IP[0],config.IP[1],config.IP[2],config.IP[3] ),  IPAddress(config.DNS[0],config.DNS[1],config.DNS[2],config.DNS[3] ),  IPAddress(config.Gateway[0],config.Gateway[1],config.Gateway[2],config.Gateway[3] ) , IPAddress(config.Netmask[0],config.Netmask[1],config.Netmask[2],config.Netmask[3] ));
