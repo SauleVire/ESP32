@@ -15,7 +15,7 @@ unsigned long PV_darinejimo_laikas;
 void PamaisymoVoztuvoSiusblys(){
   // Jei katilo temperatūra pakyla iki užduotos
 if ((Katilas > config.PV_ON_T || AkumuliacineV > config.PV_ON_T) && (PV_siurblys == false)){ 
-    digitalWrite(PVsiurblys, LOW); // įjungiamas siurblys 
+    digitalWrite(RadiatorPumpRELAYPIN, LOW); // įjungiamas siurblys 
     PV_siurblys = true; // pažymima, kad siurblys veikia
 #ifdef DEBUGpv
 Serial.print("PV ijungimo temperatura- ");Serial.print(config.PV_ON_T);Serial.print(char(186));Serial.println("C");
@@ -24,7 +24,7 @@ Serial.println("Pamaisymo voztuvo siublys IJUNGTAS *** ON ***");
 }
     // Jei katilo temperatūra nukrenta žemiau užduotos
     if ((Katilas < config.PV_OFF_T) && (AkumuliacineV < config.PV_OFF_T) && (PV_siurblys == true)){ 
-        digitalWrite(PVsiurblys, HIGH); // išjungiamas siurblys 
+        digitalWrite(RadiatorPumpRELAYPIN, HIGH); // išjungiamas siurblys 
         PV_siurblys = false; // pažymima, kad siurblys neveikia
 #ifdef DEBUGpv
 Serial.print("PV isjungimo temperatura- ");Serial.print(config.PV_OFF_T);Serial.print(char(186));Serial.println("C");
@@ -49,8 +49,8 @@ if (PV_klaida <= 2){
         PV_pauze = millis() + (PV_darinejimas * 100) - 2000 + (PV_klaida * 1000);
 //        PV_atidarinejimo_laikas = millis() + PV_atidarinejimo_pertrauka; // atsimenamas atidarymo įjungimo laikas
 //        PV_atidarytas = true; // pažymima, kad vožtuvas nebeuždarytas
-        digitalWrite(PVuzdarymas, HIGH); // signalas vožtuvui atidaryti
-        digitalWrite(PVatidarymas, LOW); // signalas vožtuvui atidaryti
+        digitalWrite(MixingValveOffRELAYPIN, HIGH); // signalas vožtuvui atidaryti
+        digitalWrite(MixingValveOnRELAYPIN, LOW); // signalas vožtuvui atidaryti
 #ifdef DEBUGpv
 Serial.print("PV_klaida= ");  Serial.println(PV_klaida);
 Serial.print("laikas= ");  Serial.print(millis() / 1000); Serial.println(" s.");
@@ -63,8 +63,8 @@ Serial.println("Pamaisymo voztuvas, pradetas ATIDARINEJIMAS, patrumpintas");
 //        PV_atidarinejimo_laikas = millis() + PV_atidarinejimo_pertrauka; // atsimenamas atidarymo įjungimo laikas
 //        PV_atidarytas = true; // pažymima, kad vožtuvas nebeuždarytas
         PV_atidarinejamas = true; // pažymima, kad vožtuvas jau atidarinėjamas
-        digitalWrite(PVuzdarymas, HIGH); // signalas vožtuvui atidaryti
-        digitalWrite(PVatidarymas, LOW); // signalas vožtuvui atidaryti
+        digitalWrite(MixingValveOffRELAYPIN, HIGH); // signalas vožtuvui atidaryti
+        digitalWrite(MixingValveOnRELAYPIN, LOW); // signalas vožtuvui atidaryti
  }
 #ifdef DEBUGpv
 Serial.print("PV_klaida= ");  Serial.println(PV_klaida);
@@ -83,8 +83,8 @@ if (PVoztuvas > config.PV_palaikoma_T + 10) {
       PV_stop = true; // pasižymime, kad vožtuvas jau stovi
       PV_atidarinejamas = false; // pažymima, kad vožtuvas jau nebeatidarinėjamas
       PV_uzdarinejamas = false; // pažymima, kad vožtuvas jau nebeuždarinėjamas
- //       digitalWrite(PVuzdarymas, HIGH); // signalas vožtuvui atidaryti
- //       digitalWrite(PVatidarymas, HIGH); // signalas vožtuvui atidaryti
+ //       digitalWrite(MixingValveOffRELAYPIN, HIGH); // signalas vožtuvui atidaryti
+ //       digitalWrite(MixingValveOnRELAYPIN, HIGH); // signalas vožtuvui atidaryti
 #ifdef DEBUGpv
 Serial.print("laikas- ");Serial.print(millis() / 1000);Serial.println(" s.");
 Serial.println("PV PAUZE, truks 0 s., PALAIKOMA TEMTERATURA PER AUKSTA");
@@ -97,8 +97,8 @@ Serial.println("PV PAUZE, truks 0 s., PALAIKOMA TEMTERATURA PER AUKSTA");
       PV_stop = true; // pasižymime, kad vožtuvas jau stovi
       PV_atidarinejamas = false; // pažymima, kad vožtuvas jau nebeatidarinėjamas
       PV_uzdarinejamas = false; // pažymima, kad vožtuvas jau nebeuždarinėjamas
-        digitalWrite(PVuzdarymas, HIGH); // signalas vožtuvui sustabdyti
-        digitalWrite(PVatidarymas, HIGH); // signalas vožtuvui sustabdyti
+        digitalWrite(MixingValveOffRELAYPIN, HIGH); // signalas vožtuvui sustabdyti
+        digitalWrite(MixingValveOnRELAYPIN, HIGH); // signalas vožtuvui sustabdyti
 #ifdef DEBUGpv
 Serial.print("laikas- ");Serial.print(millis() / 1000);Serial.println(" s.");
 Serial.print("Darinejimas prisides po- "); Serial.print(PV_pauzes_pertrauka * 100 / 1000); Serial.println(" s.");
@@ -117,8 +117,8 @@ Serial.print("Darinejimas prisides po- "); Serial.print(PV_pauzes_pertrauka * 10
 //        PV_uzdarinejimo_laikas = millis() + PV_uzdarinejimo_pertrauka; // atsimenamas atidarymo įjungimo laikas
         PV_pauze = millis() + (PV_darinejimas * 100) - 2000 + (PV_klaida * 1000);
         PV_atidarytas = true; // pažymima, kad vožtuvas nebeuždarytas
-      digitalWrite(PVatidarymas, HIGH); // stabdomas atidarymas
-      digitalWrite(PVuzdarymas, LOW); // pradedamas uždarymas
+      digitalWrite(MixingValveOnRELAYPIN, HIGH); // stabdomas atidarymas
+      digitalWrite(MixingValveOffRELAYPIN, LOW); // pradedamas uždarymas
 #ifdef DEBUGpv
 Serial.print("PV_klaida= ");  Serial.println(PV_klaida);
 Serial.print("laikas- ");  Serial.print(millis() / 1000); Serial.println(" s.");
@@ -131,8 +131,8 @@ Serial.println("Pamaisymo voztuvas, pradetas UZDARINEJIMAS, patrumpintas");
 //        PV_uzdarinejimo_laikas = millis() + PV_uzdarinejimo_pertrauka; // atsimenamas atidarymo įjungimo laikas
         PV_pauze = millis() + PV_darinejimas * 100;
         PV_atidarytas = true; // pažymima, kad vožtuvas nebeuždarytas
-      digitalWrite(PVatidarymas, HIGH); // stabdomas atidarymas
-      digitalWrite(PVuzdarymas, LOW); // pradedamas uždarymas
+      digitalWrite(MixingValveOnRELAYPIN, HIGH); // stabdomas atidarymas
+      digitalWrite(MixingValveOffRELAYPIN, LOW); // pradedamas uždarymas
 #ifdef DEBUGpv
 Serial.print("PV_klaida= ");  Serial.println(PV_klaida);
 Serial.print("laikas- ");  Serial.print(millis() / 1000); Serial.println(" s.");

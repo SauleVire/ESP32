@@ -1,4 +1,5 @@
 void Boilerio_sildymas(){
+
   #ifdef DEBUGboileris
   if (Bo_sSiurblys == true) Serial.println("Boilerio siublio busena: IJUNGTAS *** ON ***");
     if (Bo_Siurblys == false) Serial.println("Boilerio siublio busena: ISUNGTAS *** OFF ***");
@@ -7,9 +8,9 @@ void Boilerio_sildymas(){
 // Jei  boilerio viršus šaltesnis už boilerio šildymo išjungimo temperatūrą, 
 // o katilo išėjime yra daugiau šilumos, negu nustatyta boilerio šildymo pradžios  
 // temperatūra +10 C, tai įjungiamas boilerio siurblys
-     if ((Boileris < config.Bo_ON_T || Boileris < config.Bo_OFF_T) && Katilas > config.Bo_ON_T + 10 && config.Bo_Siurblio_busena == false){
-       if (Katilas > Boileris + 10){
-       digitalWrite(BoSiurblys, LOW); 
+     if ((BoilerisV < config.Bo_ON_T || BoilerisV < config.Bo_OFF_T) && Katilas > config.Bo_ON_T + 10 && config.Bo_Siurblio_busena == false){
+       if (Katilas > BoilerisV + 10){
+       digitalWrite(BoilerRELAYPIN, LOW); 
        config.Bo_Siurblio_busena = true;
 #ifdef DEBUGboileris
 Serial.println("Boilerio siublys IJUNGTAS ***_ON_ ***__PRIEZASTIS:");
@@ -20,8 +21,8 @@ Serial.print("I isejime temperatura- ");Serial.print(KaOut);Serial.print(char(18
    }}
 // Jei boilerio viršuje yra tiek šilumos, kiek nustatyta, arba katilo išėjime yra mažiau šilumos, 
 // negu boilerio viršuje, tai siurblys išjungiamas
-     if ((Boileris >= config.Bo_OFF_T || Katilas <= Boileris + 8) && (config.Bo_Siurblio_busena == true)) { 
-       digitalWrite(BoSiurblys, HIGH); 
+     if ((BoilerisV >= config.Bo_OFF_T || Katilas <= BoilerisV + 8) && (config.Bo_Siurblio_busena == true)) { 
+       digitalWrite(BoilerRELAYPIN, HIGH); 
        config.Bo_Siurblio_busena = false;
 #ifdef DEBUGboileris
 Serial.println("Boilerio siublys ISUNGTAS ***_OFF_***__PRIEZASTIS:");
@@ -31,13 +32,12 @@ Serial.print("I isejime temperatura- ");Serial.print(Katilas);Serial.print(char(
 #endif      
    }     
 }
-
 //**************************************************************************************************************
 void Boilerio_termostatas(){
 // Jei boilerio viršus šaltesnis negu nustatyta ijungimo temperatura, arba boilerio viršus šaltesnis
 // už boilerio išjungimo temperatūrą, ir ijungtas termostatas, tai jungiamas elektrinis boilerio sildymas
-if ((Boileris < config.Bo_ON_T ) && (config.Bo_Termostatas_ON == true)){
-       digitalWrite(BoTermostatas, LOW); 
+if ((BoilerisV < config.Bo_ON_T ) && (config.Bo_Termostatas_ON == true)){
+       digitalWrite(BoilerThermostatRELAYPIN, LOW); 
        config.Bo_Termostato_busena = true; // zyme, kad termostatas dabar veikia
 //     B_Termostatas_ON = false;    // kai ijungiamas elektrinis boilerio sildymas, pakeiciama ijungimo zyme
 #ifdef DEBUGboileris
@@ -47,8 +47,8 @@ Serial.println();
 #endif 
    }
 // Jei boilerio virsuje yra tiek šilumos, kiek nustatyta,  tai termostatas isjungia boilerio sildyma elektra
-     if ((Boileris >= config.Bo_OFF_T)  && (config.Bo_Termostato_busena == true)) { 
-       digitalWrite(BoTermostatas, HIGH);
+     if ((BoilerisV >= config.Bo_OFF_T)  && (config.Bo_Termostato_busena == true)) { 
+       digitalWrite(BoilerThermostatRELAYPIN, HIGH);
        config.Bo_Termostato_busena = false;
 #ifdef DEBUGboileris
 Serial.println("Ijungtas boilerio sildymas elektra I*S*J*U*N*G*T*A*S ***_OFF_ *** nuo- ");

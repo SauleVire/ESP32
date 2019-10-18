@@ -60,7 +60,7 @@ void send_PriskirtiDS18B20_html()
     //------------------------------------------------------
     for ( uint8_t i = 0; i < server.args(); i++ ) {
       if (server.argName(i) == "Kid") config.Kid = server.arg(i).toInt();
-      if (server.argName(i) == "Bid") config.Bid = server.arg(i).toInt(); 
+      if (server.argName(i) == "BVid") config.BVid = server.arg(i).toInt(); 
       if (server.argName(i) == "OLid") config.OLid = server.arg(i).toInt(); 
       if (server.argName(i) == "OKid") config.OKid = server.arg(i).toInt(); 
       if (server.argName(i) == "AVid") config.AVid = server.arg(i).toInt(); 
@@ -80,7 +80,7 @@ void send_PriskirtiDS18B20_values_html()
 { 
   String values ="";
   values += "Kid|" + (String) config.Kid + "|input\n";
-  values += "Bid|" + (String) config.Bid + "|input\n";
+  values += "BVid|" + (String) config.BVid + "|input\n";
   values += "OLid|" + (String) config.OLid + "|input\n";
   values += "OKid|" + (String) config.OKid + "|input\n";
   values += "AVid|" + (String) config.AVid + "|input\n";

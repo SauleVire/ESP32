@@ -63,7 +63,8 @@ struct strConfig {
   long intervalasEmon;
   boolean emoncmsOn;
   byte Kid; //Kolektoriaus Ds18b20 id
-  byte Bid; //Boilerio Ds18b20 id
+  byte BVid; //Boilerio viršaus Ds18b20 id
+  byte BAid; //Boilerio apačios Ds18b20 id
   byte OLid; //Oro lauko Ds18b20 id
   byte OKid; //Oro kambario Ds18b20 id
 /* ********** kintamieji Boileriui ******************* */
@@ -125,8 +126,8 @@ const int durationTemp = 5000; //The frequency of temperature measurement
 // Boileris- boilerio viršaus temperatūra
 // PVoztuvas- temperatūra po pavaišimo vožtuvo
 // LOras, KOras- lauko, kambario oras
-float Kolektorius, Boileris, OrasL, OrasK, Katilas, AkumuliacineV, AkumuliacineA, PVoztuvas;
-float KolektoriusOld=0, BoilerisOld=0, OrasLOld=0, OrasKOld=0, KatilasOld=0, AkumuliacineVOld=0, AkumuliacineAOld=0, PVoztuvasOld=0;
+float Kolektorius, BoilerisV, BoilerisA, OrasL, OrasK, Katilas, AkumuliacineV, AkumuliacineA, PVoztuvas;
+float KolektoriusOld=0, BoilerisVOld=0, BoilerisAOld=0, OrasLOld=0, OrasKOld=0, KatilasOld=0, AkumuliacineVOld=0, AkumuliacineAOld=0, PVoztuvasOld=0;
 
 // Pamaišymo vožtuvo darbiniai kintamieji
   float   PV_klaida;
@@ -144,6 +145,7 @@ boolean B_siurblys = false;
 #define REQUEST_freezing 5000   // 5000 millis= 5 sekundės
 static long timer_freezing=0;   // apsaugos nuo užšalimo tikrinimo laikas
 
+unsigned long Ekrano_rodmenu_atnaujinimo_laikas = 0;
 unsigned long PV_pauze =20000;
 unsigned long PV_pauzes_pertrauka =20000;
 unsigned long PV_atidarinejimo_laikas =0;
@@ -172,18 +174,17 @@ unsigned long windowStartTime;
 boolean Laikmatis = false;
 /////////////////////////////////////////////////////////////////////////////////
 
-
-#define RELAYPIN 32  // D4
 String RelayState = "OFF";
 String CollectorState = "OFF";
 String FreezingState = "OFF";
 
-#define AtSiurblys 7 // išvadas ak. talpos siurblio junginėjimui, Relė x
-#define BoTermostatas 7 // išvadas boilerio termostatui, Relė x
-#define BoSiurblys 7 // išvadas boilerio siurbliui, Relė x
-#define PVsiurblys 7 // išvadas pamaišymo vožtuvo siurbliui, Relė x
-#define PVuzdarymas 4 // PV uždarymas Relė 5
-#define PVatidarymas 4 // PV atidarymas Relė 4
+#define CollectorRELAYPIN 32 //išvadas kolektoriaus siurblio junginėjimui
+#define BoilerRELAYPIN 33 // išvadas boilerio siurbliui, Relė x
+#define BoilerThermostatRELAYPIN 27 // išvadas boilerio termostatui, Relė x
+#define HeatTanktRELAYPIN 14 // išvadas ak. talpos siurblio junginėjimui, Relė x
+#define RadiatorPumpRELAYPIN 13 // išvadas radijatorių siurbliui, Relė x
+#define MixingValveOffRELAYPIN 4 // PV uždarymas Relė 5
+#define MixingValveOnRELAYPIN 4 // PV atidarymas Relė 4
 /*
 **
 ** emoncms duomenų siuntimas
@@ -312,7 +313,7 @@ void ReadConfigGeneralInfo()
         
 void WriteConfigDS18b20()
 { EEPROM.write(433,config.Kid);
-  EEPROM.write(434,config.Bid);
+  EEPROM.write(434,config.BVid);
   EEPROM.write(435,config.OLid);
   EEPROM.write(436,config.OKid);
   EEPROM.write(437,config.AAid);
@@ -323,7 +324,7 @@ void WriteConfigDS18b20()
 
 void ReadConfigDS18b20()
 {   config.Kid =   EEPROM.read(433);
-    config.Bid =   EEPROM.read(434);
+    config.BVid =   EEPROM.read(434);
     config.OLid =   EEPROM.read(435);
     config.OKid = EEPROM.read(436);
     config.AAid = EEPROM.read(437);

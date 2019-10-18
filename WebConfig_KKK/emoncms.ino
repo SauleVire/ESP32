@@ -46,7 +46,7 @@ void emoncms(){
 String url = "/input/post.json?node=";
        url += String(config.katalogas)+ "&json={";
        url += String(config.reiksme1)+":"+String(Kolektorius)+",";
-       url += String(config.reiksme2)+ ":"+String(Boileris)+",";
+       url += String(config.reiksme2)+ ":"+String(BoilerisV)+",";
        url += String(config.reiksme3)+":"+String(OrasL);
        url += "}&apikey="+String(config.apikey);
   Serial.print("Requesting URL: ");

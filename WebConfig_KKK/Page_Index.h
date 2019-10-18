@@ -110,7 +110,7 @@ void filldynamicdata()
   values += "apsauga|" + (String)config.k_uzsalimas +  "|div\n";
   values += "nuorinimas|" + (String)config.k_nuorinimas +  "|div\n";
   
-  values += "B_t|" + (String)Boileris +  "|div\n";
+  values += "B_t|" + (String)BoilerisV +  "|div\n";
   values += "B_on_t|" + (String)config.Bo_ON_T +  "|div\n";
   values += "B_off_t|" + (String)config.Bo_OFF_T +  "|div\n";
   values += "Bo_rankinis|" + (String)config.Bo_Rankinis_ijungimas +  "|div\n";
