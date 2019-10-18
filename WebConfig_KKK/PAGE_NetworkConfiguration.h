@@ -53,14 +53,9 @@ Tinklai:</span><br>
 <script>
 
 function GetState()
-{
-  setValues("/admin/connectionstate");
-}
+{  setValues("/admin/connectionstate");}
 function selssid(value)
-{
-  document.getElementById("ssid").value = value; 
-}
-
+{  document.getElementById("ssid").value = value; }
 
 window.onload = function ()
 {  load("style.css","css", function() 
@@ -71,12 +66,7 @@ window.onload = function ()
   });
 }
 function load(e,t,n){if("js"==t){var a=document.createElement("script");a.src=e,a.type="text/javascript",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}else if("css"==t){var a=document.createElement("link");a.href=e,a.rel="stylesheet",a.type="text/css",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}}
-
-
-
-
 </script>
-
 
 )=====";
 
