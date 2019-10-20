@@ -59,11 +59,12 @@ void send_BoilerioKonfiguracija_html()
   {
     config.Bo_Rankinis_ijungimas = false;
     config.Bo_Termostatas = false;
+    ThermostatRelayState = "Išjungta";
     for ( uint8_t i = 0; i < server.args(); i++ ) {
       if (server.argName(i) == "Bo_ON_T") config.Bo_ON_T = server.arg(i).toInt();
       if (server.argName(i) == "Bo_OFF_T") config.Bo_OFF_T =  server.arg(i).toInt(); 
       if (server.argName(i) == "Bo_Rankinis_ijungimas") config.Bo_Rankinis_ijungimas = true; 
-      if (server.argName(i) == "Bo_termostatas") config.Bo_Termostatas = true; 
+      if (server.argName(i) == "Bo_termostatas") {config.Bo_Termostatas = true; ThermostatRelayState = "Įjungta";}
 
     }
     WriteConfigBoiler();

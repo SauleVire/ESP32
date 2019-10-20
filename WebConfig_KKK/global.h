@@ -177,10 +177,14 @@ unsigned long windowStartTime;
 boolean Laikmatis = false;
 /////////////////////////////////////////////////////////////////////////////////
 
-String RelayState = "OFF";
-String CollectorState = "OFF";
-String FreezingState = "OFF";
+String CollectorRelayState = "Išjungta";
+String kuzsalimas = "Išjungta";
+String knuorinimas = "Išjungta";
+String ThermostatRelayState = "Išjungta";
+String CollectorState = "Išjungta";
+String FreezingState = "Išjungta";
 
+// Relių būsena
 #define Ijungta HIGH
 #define Isjungta LOW
 

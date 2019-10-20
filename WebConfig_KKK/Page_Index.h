@@ -91,16 +91,16 @@ const char PAGE_EXAMPLE[] PROGMEM = R"=====(
 
 void filldynamicdata()
 {        
-    String values ="";
+  String values ="";
   values += "K_t|" + (String)Kolektorius +  "|div\n";
   values += "OL_t|" + (String)OrasL +  "|div\n";
-  values += "rele|" + (String)RelayState +  "|div\n";
+  values += "rele|" + (String)CollectorRelayState +  "|div\n";
   values += "apsauga|" + (String)config.k_uzsalimas +  "|div\n";
   values += "nuorinimas|" + (String)config.k_nuorinimas +  "|div\n";
   
   values += "BV_t|" + (String)BoilerisV +  "|div\n";
   values += "BA_t|" + (String)BoilerisA +  "|div\n";
-  values += "Bo_rankinis|" + (String)config.Bo_Rankinis_ijungimas +  "|div\n";
+  values += "Bo_rankinis|" + ThermostatRelayState +  "|div\n";
 
   values += "AV_t|" + (String)AkumuliacineV +  "|div\n";
   values += "AA_t|" + (String)AkumuliacineA +  "|div\n";
@@ -116,7 +116,7 @@ void filldynamicdata()
   values += "x_ntp|" + (String)DateTime.year + "." + (String)DateTime.month + "." + (String)DateTime.day + " " + (String)DateTime.hour + ":" + (String)DateTime.minute + ":" + (String)DateTime.second + " |div\n";
   values += "x_ntp2|" + (String)(NTP.getTimeDateString (NTP.getFirstSync ()).c_str ())+ " |div\n";
   values += "x_ntp1|" + (String)(NTP.getUptimeString ())+ " |div\n";
-    server.send ( 200, "text/plain", values); 
+  server.send ( 200, "text/plain", values); 
 }
 
 void processIndex()

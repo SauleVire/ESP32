@@ -14,10 +14,10 @@ const char PAGE_Emoncms[] PROGMEM = R"=====(
 <table border="0"  cellspacing="0" cellpadding="3" >
 <tr><td align="right">Serveris :</td><td><input type="text" id="emoncmsSrv" name="emoncmsSrv" size="15" maxlength="25" value=""></td></tr>
 <tr><td align="right">Raktas :</td><td><input type="text" id="apikey" name="apikey" size="15" maxlength="32" value=""></td></tr>
+<tr><td align="right">Katalogas :</td><td><input type="text" id="katalogas" name="katalogas" size="5" maxlength="6" value=""></td></tr>
 <tr><td align="right">Reikšmė 1 :</td><td><input type="text" id="reiksme1" name="reiksme1" size="5" maxlength="6" value=""></td></tr>
 <tr><td align="right">Reikšmė 2 :</td><td><input type="text" id="reiksme2" name="reiksme2" size="5" maxlength="6" value=""></td></tr>
 <tr><td align="right">Reikšmė 3 :</td><td><input type="text" id="reiksme3" name="reiksme3" size="5" maxlength="6" value=""></td></tr>
-<tr><td align="right">Katalogas :</td><td><input type="text" id="katalogas" name="katalogas" size="5" maxlength="6" value=""></td></tr>
 <tr><td align="right">Intervalas (s) :</td><td><input type="text" id="intervalasEmon" name="intervalasEmon" min="10" max="600" size="3" maxlength="3" value=""></td></tr>
 <tr><td align="right">Aktyvinti emoncms :</td><td><input type="checkbox" id="emoncmsOn" name="emoncmsOn"></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="myButton" value="Įrašyti"></td></tr>
@@ -64,10 +64,10 @@ void send_Emoncms_html()
     for ( uint8_t i = 0; i < server.args(); i++ ) {
       if (server.argName(i) == "emoncmsSrv") config.emoncmsSrv = urldecode( server.arg(i)); 
       if (server.argName(i) == "apikey") config.apikey = urldecode( server.arg(i)); 
+      if (server.argName(i) == "katalogas") config.katalogas = urldecode( server.arg(i)); 
       if (server.argName(i) == "reiksme1") config.reiksme1 = urldecode( server.arg(i)); 
       if (server.argName(i) == "reiksme2") config.reiksme2 = urldecode( server.arg(i)); 
       if (server.argName(i) == "reiksme3") config.reiksme3 = urldecode( server.arg(i)); 
-      if (server.argName(i) == "katalogas") config.katalogas = urldecode( server.arg(i)); 
       if (server.argName(i) == "intervalasEmon") config.intervalasEmon =  server.arg(i).toInt(); 
       if (server.argName(i) == "emoncmsOn") config.emoncmsOn = true; 
     }
@@ -84,10 +84,10 @@ void send_Emoncms_values_html()
   String values ="";
   values += "emoncmsSrv|" + (String) config.emoncmsSrv + "|input\n";
   values += "apikey|" + (String) config.apikey + "|input\n";
+  values += "katalogas|" +  (String) config.katalogas + "|input\n";
   values += "reiksme1|" + (String) config.reiksme1 + "|input\n";
   values += "reiksme2|" +  (String) config.reiksme2 + "|input\n";
   values += "reiksme3|" +  (String) config.reiksme3 + "|input\n";
-  values += "katalogas|" +  (String) config.katalogas + "|input\n";
   values += "intervalasEmon|" +  (String) config.intervalasEmon + "|input\n";
   values += "emoncmsOn|" +  (String) (config.emoncmsOn ? "checked" : "") + "|chk\n";
   server.send ( 200, "text/plain", values);

@@ -1,36 +1,4 @@
-/*
-//#define emoncms_host "1.2.3.4"
-const int emoncms_httpPort = 80;
-String emoncms_apikey = "YOUR_API_KEY";
-int node = 1;
 
-//config.emoncmsSrv; 
-//(char*) config.emoncmsSrv.c_str();
-
-
-void postEmoncms() {
-  // run only if the ESP is connected to a network
-  if ( WiFi.status() == WL_CONNECTED ) {
-    WiFiClient client;
-    if (!client.connect(config.emoncmsSrv.c_str(), emoncms_httpPort)) {
-      Serial.println("Post to emoncms failed");
-      return;
-    }
-    // We now create a URI for the request
-    String url = "GET /emoncms/input/post.json?apikey=" + emoncms_apikey + "&node=" + node + "&json={2:" + Kolektorius + ",1:" + OrasL + "";
-    client.println(url);
-    client.print("Host: ");
-    client.println(config.emoncmsSrv);
-    client.println("Connection: close");
-    client.println();
-    client.stop(); //Stopping client
-    Serial.println("Post to emoncms : success");
-  }
-  else {
-    Serial.println("Post to emoncms : not connected to internet");
-  }
-}
-*/
 
 void emoncms(){
 
@@ -43,7 +11,7 @@ void emoncms(){
   }
 
 //String url = "/emoncms/input/post.json?node=" + String(config.katalogas) + "&json={"+ String(config.reiksme1)+":"+String(Kolektorius)+"," + String(config.reiksme2)+ ":"+String(Boileris)+","+ String(config.reiksme3)+":"+String(OrasL)+"}&apikey="+String(config.apikey);
-String url = "/input/post.json?node=";
+String url = "/emoncms/input/post.json?node=";
        url += String(config.katalogas)+ "&json={";
        url += String(config.reiksme1)+":"+String(Kolektorius)+",";
        url += String(config.reiksme2)+ ":"+String(BoilerisV)+",";

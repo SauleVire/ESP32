@@ -78,10 +78,10 @@
 #include "Page_PriskirtiDS18B20.h"
 #include "Page_Pvoztuvas.h"
 
-//#define DEBUG_Kolektorius 0 // Naudojama tik testavimui
+#define DEBUG_Kolektorius 1 // Naudojama tik testavimui
 #define DEBUGpv 1 // Naudojama tik testavimui
-//#define DEBUG_akumuliacine 0 // Naudojama tik testavimui
-//#define DEBUGboileris 0 // Naudojama tik testavimui
+#define DEBUG_akumuliacine 1 // Naudojama tik testavimui
+#define DEBUGboileris 1 // Naudojama tik testavimui
 #define DEBUGbusena 1 // Naudojama tik testavimui
 #define DEBUGds18b20 1 // Naudojama tik testavimui
 #define Diagnostika 0 // Naudojama tik testavimui
@@ -177,21 +177,6 @@ void setup ( void ) {
 #endif
   }
 
-
-  /*	if (AdminEnabled)
-  	{
-  		WiFi.mode(WIFI_AP_STA);
-  		WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-      Serial.print("PT adresas: " + WiFi.softAPIP().toString()+ "\n");
-      Serial.print("PT vardas: " + String(ACCESS_POINT_NAME) + "\n");
-      Serial.print("Slaptažodis: " + String(ACCESS_POINT_PASSWORD) + "\n\n");
-  	}	else	{
-    WiFi.mode(WIFI_STA);
-    Serial.println("Statinis adresas: " + WiFi.localIP().toString()+ "\n");
-    Serial.print("SSID'as: " + String(config.ssid) + "\n");
-    Serial.print("Slaptažodis: " + String(config.password) + "\n\n");	}
-
-  	ConfigureWifi();*/
 
   if (AdminEnabled)
   {
@@ -402,25 +387,21 @@ if (PV_stop == true) {Serial.println("Pamaisymo voztuvas NEJUDA");
 if (PV_atidarinejamas = true)  Serial.println("Pamaisymo voztuvas ATIDARINEJAMAS");
 if (PV_uzdarinejamas = true)   Serial.println("Pamaisymo voztuvas UZDARINEJAMAS");
    }
+    Serial.printf("\nFreeMem: %d \nDabar- %d:%d:%d %d.%d.%d \n", ESP.getFreeHeap(), DateTime.year, DateTime.month, DateTime.day, DateTime.hour, DateTime.minute, DateTime.second);
 Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
+
+//  if (WiFi.status() != WL_CONNECTED) {
+//      Serial.println("Reconnecting to WiFi...");
+//      WiFi.disconnect();
+//      WiFi.begin (config.ssid.c_str(), config.password.c_str());}
+
 #endif
   } 
-
-
 
   // Taimeris nustato laiko intervalus temperatūrų matavimui
   unsigned long currentMillis = millis();
   unsigned long currentMillis1 = millis();
-//unsigned long Temperaturos_matavimu_laikas = 0;
-//unsigned long Temperaturos_matavimu_pertrauka
-//--------------- tikrinama ar jau laikas matuoti temperatūrą ---------------------
-//  if (config.k_intervalas < 3) config.k_intervalas = 5;
-//  if (millis() >= Temperaturos_matavimu_laikas)
-//    { // įsimenamas paskutinio matavimo laikas
-//    previousMillis = currentMillis;
-//    TemteraturosMatavimas();
-//    Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
-//    }
+
       //------------------------ Boilerio valdymo pradžia ---------------------------------
 // boilerio siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Boilerio_siurblio_ijungimo_laikas ){
@@ -450,12 +431,12 @@ Akumuliacine_talpa ();
 //------------------- Jei įjungtas nuorinimo režimas ------------------------------
 // arba apsauga nuo užšalimo ir kolektoriaus temperatūra artėja prie 0, įjungiamas siurblys
     if (config.k_nuorinimas == 1 or ((Kolektorius < 0.68) & (config.k_uzsalimas == 1)))
-    { digitalWrite(CollectorRELAYPIN, Ijungta); RelayState = "Įjungtas";
+    { digitalWrite(CollectorRELAYPIN, Ijungta); CollectorRelayState = "Įjungtas";
       Serial.print("\nSiurblio rele įjungta ON (Nuorinimas, užšalimas)\n");
     } else {
       //Jei laikas sutampa su laiku, kai kolektoriaus šiluma niekinė, siurblys išjungiamas
       if (DateTime.hour == config.TurnOffHour or DateTime.hour == config.TurnOffHour + 1 )
-      { digitalWrite(CollectorRELAYPIN, Isjungta); RelayState = "Išjungtas(laikas)";
+      { digitalWrite(CollectorRELAYPIN, Isjungta); CollectorRelayState = "Išjungtas(laikas)";
         Serial.print("\nSiurblio rele įjungta OFF (nurodytas išjungimo laikas)\n");
       } else {
         Saules_Kolektoriaus_Siurblys();
@@ -486,25 +467,7 @@ if (config.PV_rankinis_ijungimas == 0){
     previousMillis1 = currentMillis1;
     emoncms();
   }
-/*#ifdef Diagnostika
-  // tikrinama ar jau laikas matuoti temperatūrą
-  if (millis() - previousMillis2 >= 10000)
-  { // įsimenamas paskutinio matavimo laikas
-    previousMillis2 = millis();
-    Serial.print("\nemoncmsOn - "); Serial.print(config.emoncmsOn);
-    Serial.print(", k_uzsalimas - "); Serial.print(config.k_uzsalimas);
-    Serial.print("\nKol- "); Serial.print(Kolektorius);
-    Serial.print(", Boi- "); Serial.print(BoilerisV);
-    Serial.print(", OLa- "); Serial.print(OrasL);
-    Serial.print("\nOKa- "); Serial.print(OrasK);
-    Serial.print(", AAp- "); Serial.print(AkumuliacineA);
-    Serial.print(", AVi- "); Serial.print(AkumuliacineV);
-    Serial.print("\nPVo- "); Serial.print(PVoztuvas);
-    Serial.print(", KKK- "); Serial.println(Katilas);
 
-    Serial.printf("\nFreeMem: %d \nDabar- %d:%d:%d %d.%d.%d \n", ESP.getFreeHeap(), DateTime.year, DateTime.month, DateTime.day, DateTime.hour, DateTime.minute, DateTime.second);
-  }
-#endif*/
   //  if (WiFi.mode(WIFI_STA))
   //    machineIOs.SetLeds(noChange, noChange, (((millis() / 125) & 7) == 0) ? On : Off); // 1 Hz blink with 12.5% duty cycle
   //  else
@@ -519,6 +482,5 @@ if (config.PV_rankinis_ijungimas == 0){
   //	if (Refresh)
   //	{	Refresh = false;
   //		Serial.println("Refreshing...");
-  //		Serial.printf("FreeMem:%d %d:%d:%d %d.%d.%d \n",ESP.getFreeHeap() , DateTime.hour,DateTime.minute, DateTime.second, DateTime.year, DateTime.month, DateTime.day);
   //	}
 }
