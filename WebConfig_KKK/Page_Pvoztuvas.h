@@ -14,7 +14,7 @@ const char PAGE_PVoztuvoKonfiguracija[] PROGMEM = R"=====(
 <tr><td align="right">PV tolerancijos t (°C) :</td><td><input type="text" id="pv_tolerancijos_t" name="pv_tolerancijos_t" min="1" max="3" size="3" maxlength="3" value=""></td></tr>
 <tr><td align="right">PV įjungimo t (°C) :</td><td><input type="text" id="pv_on_t" name="pv_on_t" min="1" max="2" size="3" maxlength="3" value=""></td></tr>
 <tr><td align="right">PV išjungimo t (°C) :</td><td><input type="text" id="pv_off_t" name="pv_off_t" min="1" max="2" size="3" maxlength="3" value=""></td></tr>
-<tr><td align="right">PV rankinis įjungimas t (°C) :</td><td><input type="checkbox" id="pv_rankinis_ijungimas" name="pv_rankinis_ijungimas"></td></tr>
+<tr><td align="right">PV rankinis įjungimas :</td><td><input type="checkbox" id="pv_rankinis_ijungimas" name="pv_rankinis_ijungimas"></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="myButton" value="Įrašyti"></td></tr>
 </table>
 </form>

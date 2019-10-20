@@ -60,6 +60,7 @@ void send_AkumuliacinesKonfiguracija_html()
 
     }
     WriteConfigHeatStorageTank();
+    Akumuliacines_siurblio_ijungimo_laikas =0;
     firstStart = true;
   }
   server.send ( 200, "text/html", PAGE_AkumuliacinesKonfiguracija ); 

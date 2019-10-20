@@ -34,7 +34,7 @@ void SetupDS18B20(){
   
   numberOfDevices = DS18B20.getDeviceCount();
   Serial.print( "Device count: " );
-  Serial.println( numberOfDevices );
+  Serial.println( numberOfDevices );delay(3000);
 
   lastTemp = millis();
   DS18B20.requestTemperatures();
@@ -47,11 +47,11 @@ void SetupDS18B20(){
       Serial.print("Found device ");
       Serial.print(i, DEC);
       Serial.print(" with address: " + GetAddressToString(devAddr[i]));
-      Serial.println();
+      Serial.println(); delay(30);
     }else{
       Serial.print("Found ghost device at ");
       Serial.print(i, DEC);
-      Serial.print(" but could not detect address. Check power and cabling");
+      Serial.print(" but could not detect address. Check power and cabling"); delay(30);
     }
 
     //Get resolution of DS18b20
@@ -81,48 +81,66 @@ void TemteraturosMatavimas() {
   // Check if any reads failed and exit
   if (Kolektorius == -127 or Kolektorius == 85 or Kolektorius > 127 ) {
     Kolektorius = KolektoriusOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { KolektoriusOld = Kolektorius;}
+#ifdef DEBUGds18b20
+Serial.println("Klaida! Kolektorius rodmenys neteisingi");  
+#endif
+   } else { KolektoriusOld = Kolektorius;}
 
   if (BoilerisV == -127 or BoilerisV == 85 or BoilerisV > 127 ) {
     BoilerisV = BoilerisVOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { BoilerisVOld = BoilerisV;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! BoilerisV rodmenys neteisingi");  
+#endif
+   } else { BoilerisVOld = BoilerisV;}
 
   if (BoilerisA == -127 or BoilerisA == 85 or BoilerisA > 127 ) {
     BoilerisA = BoilerisAOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { BoilerisAOld = BoilerisA;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! BoilerisA rodmenys neteisingi");  
+#endif
+   } else { BoilerisAOld = BoilerisA;}
 
   if (OrasL == -127 or OrasL == 85 or OrasL > 127 ) {
     OrasL = OrasLOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { OrasLOld = OrasL;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! OrasL rodmenys neteisingi");  
+#endif
+   } else { OrasLOld = OrasL;}
 
   if (OrasK == -127 or OrasK == 85 or OrasK > 127 ) {
     OrasK = OrasKOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { OrasKOld = OrasK;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! OrasK rodmenys neteisingi");  
+#endif
+   } else { OrasKOld = OrasK;}
 
   if (Katilas == -127 or Katilas == 85 or Katilas > 127 ) {
     Katilas = KatilasOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { KatilasOld = Katilas;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! Katilas rodmenys neteisingi");  
+#endif
+   } else { KatilasOld = Katilas;}
 
   if (AkumuliacineV == -127 or AkumuliacineV == 85 or AkumuliacineV > 127 ) {
     AkumuliacineV = AkumuliacineVOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { AkumuliacineVOld = AkumuliacineV;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! AkumuliacineV rodmenys neteisingi");  
+#endif
+   } else { AkumuliacineVOld = AkumuliacineV;}
 
   if (AkumuliacineA == -127 or AkumuliacineA == 85 or AkumuliacineA > 127 ) {
     AkumuliacineA = AkumuliacineAOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { AkumuliacineAOld = AkumuliacineA;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! AkumuliacineA rodmenys neteisingi");  
+#endif
+   } else { AkumuliacineAOld = AkumuliacineA;}
 
   if (PVoztuvas == -127 or PVoztuvas == 85 or PVoztuvas > 127 ) {
     PVoztuvas = PVoztuvasOld;
-    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  }
-    else { PVoztuvasOld = PVoztuvas;}
+#ifdef DEBUGds18b20
+    Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  
+#endif
+   } else { PVoztuvasOld = PVoztuvas;}
 
   DS18B20.requestTemperatures();
   

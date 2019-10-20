@@ -71,14 +71,11 @@ struct strConfig {
   int Bo_ON_T; // temperatūra boilerio siurbliui įjungti
   int Bo_OFF_T; // temperatūra boilerio siurbliui įšjungti
   boolean Bo_Rankinis_ijungimas; // Žymė rankiniam Boilerio siurblio valdymui
-  boolean Bo_Termostatas_ON; // Žymė rankiniam termostato įjungimui
-  boolean Bo_Termostato_busena; // Žymė termostato busenai
-  boolean Bo_Siurblio_busena; // Žymė termostato busenai
-  /* ********** kintamieji Akumuliacinei talpai ******************* */
+  boolean Bo_Termostatas; // Žymė rankiniam termostato įjungimui
+   /* ********** kintamieji Akumuliacinei talpai ******************* */
   byte At_ON_T;//   temperatūra akumuliacines talpos siurbliui įjungti
   byte At_OFF_T;//  temperatūra akumuliacines talpos siurbliui įšjungti
   byte At_Rankinis_ijungimas; // žymė rankiniam Akumuliacinės talpos siurblio valdymui
-  boolean At_Siurblio_busena; //akumuliacinės talpos siurblio būsena  0-išjungta, 1-įjungta
   byte AVid; //Akumuliacinės viršaus Ds18b20 id
   byte AAid; //Akumuliacinės apačios Ds18b20 id
 /* ************** kintamieji KKK ************************************ */
@@ -95,7 +92,7 @@ struct strConfig {
   byte  PV_ON_T; // PV įjungimo temperatūra 
   byte  PV_OFF_T; // PV išjungimo temperatūra 
   byte  PV_rankinis_ijungimas; // Žymė rankiniam PV valdymui
-  byte  PV_rezimas; // 1- rankinis, 2- automatinis
+  byte  PV_rezimas; // 1- rankinis, 0- automatinis
   byte  PVid; //Pamaišymo vožtuvo Ds18b20 id
 
 /* ********************************************************************** */
@@ -124,36 +121,42 @@ const int durationTemp = 5000; //The frequency of temperature measurement
 //kintamieji saugoti ismatuotoms temperaturu reiksmems
 // Katilas- katilo pagaminta šiluma
 // Boileris- boilerio viršaus temperatūra
-// PVoztuvas- temperatūra po pavaišimo vožtuvo
+// PVoztuvas- į radijatorius tiekiamo termofikato temperatūra
 // LOras, KOras- lauko, kambario oras
 float Kolektorius, BoilerisV, BoilerisA, OrasL, OrasK, Katilas, AkumuliacineV, AkumuliacineA, PVoztuvas;
 float KolektoriusOld=0, BoilerisVOld=0, BoilerisAOld=0, OrasLOld=0, OrasKOld=0, KatilasOld=0, AkumuliacineVOld=0, AkumuliacineAOld=0, PVoztuvasOld=0;
 
 // Pamaišymo vožtuvo darbiniai kintamieji
   float   PV_klaida;
-  boolean PV_atidarytas;
-  boolean PV_uzdarytas;
-  boolean PV_atidarinejamas;
-  boolean PV_uzdarinejamas;
-  boolean PV_pusiausvyra;
-  boolean PV_stop;
-  /* ********** kintamieji siurbliams ******************* */
+  boolean PV_atidarytas = false;
+  boolean PV_uzdarytas = false;
+  boolean PV_atidarinejamas = false;
+  boolean PV_uzdarinejamas = false;
+  boolean PV_pusiausvyra = true;
+  boolean PV_stop = true;
+  /* ********** kintamieji siurblio būsenai ******************* */
 boolean SK_siurblys = false;
-boolean PV_siurblys = false;
-boolean AT_siurblys = false;
-boolean B_siurblys = false;
+boolean PamaisymoV_siurblio_busena = false;
+boolean AkumuliacinesT_Siurblio_busena = false; //akumuliacinės talpos siurblio būsena  0-išjungta, 1-įjungta
+boolean Boilerio_Siurblio_busena = false;
+
+boolean Boilerio_Termostato_busena = false; // Žymė termostato busenai
+ 
 #define REQUEST_freezing 5000   // 5000 millis= 5 sekundės
 static long timer_freezing=0;   // apsaugos nuo užšalimo tikrinimo laikas
 
-unsigned long Ekrano_rodmenu_atnaujinimo_laikas = 0;
+unsigned long Temperaturos_matavimu_laikas = 0;
+unsigned long Temperaturos_matavimu_pertrauka = 30000;
 unsigned long PV_pauze =20000;
 unsigned long PV_pauzes_pertrauka =20000;
 unsigned long PV_atidarinejimo_laikas =0;
 unsigned long PV_uzdarinejimo_laikas =0;
 unsigned long PV_atidarinejimo_pertrauka =6000;
 unsigned long PV_uzdarinejimo_pertrauka =6000;
-unsigned long Boilerio_siurblio_ijungimo_laikas;
-unsigned long Boilerio_siurblio_pertrauka =60000;
+unsigned long Boilerio_siurblio_ijungimo_laikas =0;
+unsigned long Boilerio_siurblio_pertrauka =30000;
+unsigned long Akumuliacines_siurblio_ijungimo_laikas =0;
+unsigned long Akumuliacines_siurblio_pertrauka =30000;
 byte PV_darinejimas = 60;
 /*
 **
@@ -178,13 +181,16 @@ String RelayState = "OFF";
 String CollectorState = "OFF";
 String FreezingState = "OFF";
 
-#define CollectorRELAYPIN 32 //išvadas kolektoriaus siurblio junginėjimui
-#define BoilerRELAYPIN 33 // išvadas boilerio siurbliui, Relė x
-#define BoilerThermostatRELAYPIN 27 // išvadas boilerio termostatui, Relė x
-#define HeatTanktRELAYPIN 14 // išvadas ak. talpos siurblio junginėjimui, Relė x
-#define RadiatorPumpRELAYPIN 13 // išvadas radijatorių siurbliui, Relė x
-#define MixingValveOffRELAYPIN 4 // PV uždarymas Relė 5
-#define MixingValveOnRELAYPIN 4 // PV atidarymas Relė 4
+#define Ijungta HIGH
+#define Isjungta LOW
+
+#define CollectorRELAYPIN 2 //išvadas kolektoriaus siurblio junginėjimui
+#define BoilerRELAYPIN 32 // išvadas boilerio siurbliui, Relė 1
+#define BoilerThermostatRELAYPIN 33 // išvadas boilerio termostatui, Relė 2
+#define HeatTanktRELAYPIN 27 // išvadas ak. talpos siurblio junginėjimui, Relė 3
+#define RadiatorPumpRELAYPIN 14 // išvadas radijatorių siurbliui, Relė 4
+#define MixingValveOffRELAYPIN 13 // PV uždarymas Relė 5
+#define MixingValveOnRELAYPIN 12 // PV atidarymas Relė 6
 /*
 **
 ** emoncms duomenų siuntimas
@@ -312,8 +318,9 @@ void ReadConfigGeneralInfo()
     config.TurnOffMinute = EEPROM.read(462);}
         
 void WriteConfigDS18b20()
-{ EEPROM.write(433,config.Kid);
-  EEPROM.write(434,config.BVid);
+{ EEPROM.write(432,config.Kid);
+  EEPROM.write(433,config.BVid);
+  EEPROM.write(434,config.BAid);
   EEPROM.write(435,config.OLid);
   EEPROM.write(436,config.OKid);
   EEPROM.write(437,config.AAid);
@@ -323,8 +330,9 @@ void WriteConfigDS18b20()
     EEPROM.commit();}
 
 void ReadConfigDS18b20()
-{   config.Kid =   EEPROM.read(433);
-    config.BVid =   EEPROM.read(434);
+{   config.Kid =   EEPROM.read(432);
+    config.BVid =   EEPROM.read(433);
+    config.BAid =   EEPROM.read(434);
     config.OLid =   EEPROM.read(435);
     config.OKid = EEPROM.read(436);
     config.AAid = EEPROM.read(437);
@@ -391,16 +399,17 @@ void WriteConfigBoiler()
 {  EEPROM.write(174,config.Bo_ON_T);
   EEPROM.write(175,config.Bo_OFF_T);
   EEPROM.write(176,config.Bo_Rankinis_ijungimas);
-  EEPROM.write(177,config.Bo_Termostatas_ON);
-  EEPROM.write(178,config.Bo_Termostato_busena);
+  EEPROM.write(177,config.Bo_Termostatas);
+//  EEPROM.write(178,config.Bo_Termostato_busena);
         EEPROM.commit();}
 
 void ReadConfigBoiler()
 {   config.Bo_ON_T = EEPROM.read(174);
     config.Bo_OFF_T = EEPROM.read(175);
     config.Bo_Rankinis_ijungimas = EEPROM.read(176);
-    config.Bo_Termostatas_ON = EEPROM.read(177);
-    config.Bo_Termostato_busena = EEPROM.read(178);} //
+    config.Bo_Termostatas = EEPROM.read(177);
+//    config.Bo_Termostato_busena = EEPROM.read(178);
+} //
 
 void WriteConfigHeatStorageTank()
 { EEPROM.write(179,config.At_ON_T);

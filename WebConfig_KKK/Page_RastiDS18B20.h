@@ -15,13 +15,14 @@ const char Page_RastiDS18B20[] PROGMEM = R"=====(
 <table border="0"  cellspacing="0" cellpadding="3" >
 <tr><td align="right">Rasta</td><td>Priskirta</td></tr>
 <tr><td align="right">t0 : <span id="t0"></span></td><td>Kolektorius: <input type="text" id="Kid" name="Kid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t1 : <span id="t1"></span></td><td>Boileris: <input type="text" id="Bid" name="Bid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t2 : <span id="t2"></span></td><td>Oras lauko: <input type="text" id="OLid" name="OLid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t3 : <span id="t3"></span></td><td>Oras kambario: <input type="text" id="OKid" name="OKid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t4 : <span id="t4"></span></td><td>Akumuliacinė viršus: <input type="text" id="AVid" name="AVid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t5 : <span id="t5"></span></td><td>Akumuliacinė apačia: <input type="text" id="AAid" name="AAid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t6 : <span id="t6"></span></td><td>PVožtuvas: <input type="text" id="PVid" name="PVid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">t7 : <span id="t7"></span></td><td>Katilas: <input type="text" id="KKKid" name="KKKid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t1 : <span id="t1"></span></td><td>BoilerisV: <input type="text" id="BVid" name="BVid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t2 : <span id="t1"></span></td><td>BoilerisA: <input type="text" id="BAid" name="BAid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t3 : <span id="t2"></span></td><td>Oras lauko: <input type="text" id="OLid" name="OLid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t4 : <span id="t3"></span></td><td>Oras kambario: <input type="text" id="OKid" name="OKid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t5 : <span id="t4"></span></td><td>Akumuliacinė viršus: <input type="text" id="AVid" name="AVid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t6 : <span id="t5"></span></td><td>Akumuliacinė apačia: <input type="text" id="AAid" name="AAid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t7 : <span id="t6"></span></td><td>PVožtuvas: <input type="text" id="PVid" name="PVid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="right">t8 : <span id="t7"></span></td><td>Katilas: <input type="text" id="KKKid" name="KKKid" size="2" maxlength="2" value=""></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="myButton" value="Įrašyti"></td></tr>
 </table><br><br>
 </form>
@@ -59,7 +60,8 @@ void send_RastiDS18B20_html()
     //------------------------------------------------------
     for ( uint8_t i = 0; i < server.args(); i++ ) {
       if (server.argName(i) == "Kid") config.Kid = server.arg(i).toInt();
-      if (server.argName(i) == "Bid") config.Bid = server.arg(i).toInt(); 
+      if (server.argName(i) == "BVid") config.BVid = server.arg(i).toInt(); 
+      if (server.argName(i) == "BAid") config.BAid = server.arg(i).toInt(); 
       if (server.argName(i) == "OLid") config.OLid = server.arg(i).toInt(); 
       if (server.argName(i) == "OKid") config.OKid = server.arg(i).toInt(); 
       if (server.argName(i) == "AVid") config.AVid = server.arg(i).toInt(); 
@@ -79,7 +81,8 @@ void send_RastiDS18B20_values_html()
 { 
   String values ="";
   values += "Kid|" + (String) config.Kid + "|input\n";
-  values += "Bid|" + (String) config.Bid + "|input\n";
+  values += "BVid|" + (String) config.BVid + "|input\n";
+  values += "BAid|" + (String) config.BAid + "|input\n";
   values += "OLid|" + (String) config.OLid + "|input\n";
   values += "OKid|" + (String) config.OKid + "|input\n";
   values += "AVid|" + (String) config.AVid + "|input\n";

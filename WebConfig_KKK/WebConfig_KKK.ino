@@ -78,7 +78,14 @@
 #include "Page_PriskirtiDS18B20.h"
 #include "Page_Pvoztuvas.h"
 
-#define Diagnostika 1 // Naudojama tik testavimui
+//#define DEBUG_Kolektorius 0 // Naudojama tik testavimui
+#define DEBUGpv 1 // Naudojama tik testavimui
+//#define DEBUG_akumuliacine 0 // Naudojama tik testavimui
+//#define DEBUGboileris 0 // Naudojama tik testavimui
+#define DEBUGbusena 1 // Naudojama tik testavimui
+#define DEBUGds18b20 1 // Naudojama tik testavimui
+#define Diagnostika 0 // Naudojama tik testavimui
+
 #define ACCESS_POINT_NAME  "SauleVire_PT"
 #define ACCESS_POINT_PASSWORD  ""
 #define AdminTimeOut 300  // Defines the Time in Seconds, when the Admin-Mode will be disabled
@@ -88,7 +95,15 @@ const char* host = "SauleVire";
 
 void setup ( void ) {
   EEPROM.begin(4096);
-
+  pinMode(2, OUTPUT);
+  pinMode(32, OUTPUT);
+  pinMode(33, OUTPUT);
+  pinMode(25, OUTPUT);
+  pinMode(26, OUTPUT);
+  pinMode(27, OUTPUT);
+  pinMode(14, OUTPUT);
+  pinMode(13, OUTPUT);
+  pinMode(12, OUTPUT);
 #ifdef Diagnostika
   Serial.begin(115200);
   Serial.println("Čia SauleVire.lt pradžia\n");
@@ -130,8 +145,8 @@ void setup ( void ) {
     config.Bo_ON_T = 45; // temperatūra boilerio siurbliui įjungti
     config.Bo_OFF_T = 65; // temperatūra boilerio siurbliui įšjungti
     config.Bo_Rankinis_ijungimas = false; // Žymė rankiniam AT siurblio valdymui
-    config.Bo_Termostatas_ON = false; // Žymė rankiniam termostato įjungimui
-    config.Bo_Termostato_busena = false; // Žymė termostato busenai
+    config.Bo_Termostatas = false; // Žymė rankiniam termostato įjungimui
+//    config.Bo_Termostato_busena = false; // Žymė termostato busenai
     /* ********** kintamieji Akumuliacinei talpai ******************* */
     config.At_ON_T = 90; // temperatūra akumuliacines talpos siurbliui įjungti
     config.At_OFF_T = 89; // temperatūra akumuliacines talpos siurbliui įšjungti
@@ -141,7 +156,7 @@ void setup ( void ) {
     config.PV_OFF_T = 35; // temperatūra radijatorių siurbliui įšjungti
     config.PV_palaikoma_T = 40; // Į radiatorius tiekiamo termofikato temperatūra
     config.PV_tolerancijos_T = 1.2; // Į radiatorius tiekiamo termofikato tolerancijos temperatūra
-    config.PV_rankinis_ijungimas = false; // Žymė rankiniam radijatorių siurblio valdymui
+    config.PV_rankinis_ijungimas = true; // Žymė rankiniam radijatorių siurblio valdymui
     /* ********** PID nustatymai ************************************ */
     config.Kp = 25;
     config.Ki = 1.5;
@@ -369,24 +384,25 @@ void loop ( void ) {
   }
   server.handleClient();
   ///////////// *   START Your Code here    * //////////////////////
-  /****************************************************************/
-  if (millis() > Ekrano_rodmenu_atnaujinimo_laikas ) { 
-Serial.println("************ temperaturu parodymas ********************");
-#ifdef DEBUGds18b20
+  //**************** vykdoma programa TemteraturosMatavimas() ************************************************//
+  if (millis() > Temperaturos_matavimu_laikas) {
+  if (config.k_intervalas < 3) config.k_intervalas = 5;
+        TemteraturosMatavimas(); 
+Serial.println("\n************ vykdoma programa TemteraturosMatavimas() ********************\n");
+#ifdef DEBUGbusena
 Serial.print("KKK- ");Serial.print(Katilas);Serial.print(" SK- ");Serial.print(Kolektorius);Serial.print(" PV- ");Serial.println(PVoztuvas);
-Serial.print("AV- ");Serial.print(AkumuliacineV);Serial.print(" AA/ ");Serial.print(AkumuliacineA);Serial.print(" KO- ");Serial.println(OrasK);
-Serial.print("BV- ");Serial.print(BoilerisV);Serial.print(" BA- ");Serial.print(BoilerisA);Serial.print(" OL-/ ");Serial.println(OrasL);
+Serial.print("AV- ");Serial.print(AkumuliacineV);Serial.print(" AA- ");Serial.print(AkumuliacineA);Serial.print(" KO- ");Serial.println(OrasK);
+Serial.print("BV- ");Serial.print(BoilerisV);Serial.print(" BA- ");Serial.print(BoilerisA);Serial.print(" OL- ");Serial.println(OrasL);
 Serial.println("----");
 Serial.print("millis- ");Serial.println(millis()/1000);
-#endif
-#ifdef DEBUGbusena
-if (PV_uzdarytas == true) {Serial.println("Pamaisymo voztuvas PILNAI UZDARYTAS"); 
-   }else {Serial.println("Pamaisymo voztuvas KAZKIEK ATIDARYTAS");}
-if (PV_stop == true) {Serial.println("Pamaisymo voztuvas NEJUDA"); 
-   }else{ Serial.println("Pamaisymo voztuvas **JUDA");}
-//if (PV_atidarinejamas = false) Serial.println("Pamaisymo voztuvas, atidarymas- NEBEJUDA"); else Serial.println("Pamaisymo voztuvas ATIDARINEJAMAS");
-//if (PV_uzdarinejamas = false) Serial.println("Pamaisymo voztuvas, uzdarymas- NEBEJUDA"); else Serial.println("Pamaisymo voztuvas UZDARINEJAMAS");
 
+if (PV_uzdarytas == false & PV_atidarytas == false) Serial.println("Pamaisymo voztuvo padėtis NEŽINOMA"); 
+if (PV_stop == true) {Serial.println("Pamaisymo voztuvas NEJUDA"); 
+   }else{ 
+if (PV_atidarinejamas = true)  Serial.println("Pamaisymo voztuvas ATIDARINEJAMAS");
+if (PV_uzdarinejamas = true)   Serial.println("Pamaisymo voztuvas UZDARINEJAMAS");
+   }
+Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
 #endif
   } 
 
@@ -395,51 +411,82 @@ if (PV_stop == true) {Serial.println("Pamaisymo voztuvas NEJUDA");
   // Taimeris nustato laiko intervalus temperatūrų matavimui
   unsigned long currentMillis = millis();
   unsigned long currentMillis1 = millis();
-
+//unsigned long Temperaturos_matavimu_laikas = 0;
+//unsigned long Temperaturos_matavimu_pertrauka
 //--------------- tikrinama ar jau laikas matuoti temperatūrą ---------------------
-  if (config.k_intervalas < 3) config.k_intervalas = 5;
-  if ((unsigned long)(currentMillis - previousMillis) >= config.k_intervalas * 1000)
-  { // įsimenamas paskutinio matavimo laikas
-    previousMillis = currentMillis;
-    TemteraturosMatavimas();}
-
-      //--------------------------------------------------------------------------
-      // boilerio siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
+//  if (config.k_intervalas < 3) config.k_intervalas = 5;
+//  if (millis() >= Temperaturos_matavimu_laikas)
+//    { // įsimenamas paskutinio matavimo laikas
+//    previousMillis = currentMillis;
+//    TemteraturosMatavimas();
+//    Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
+//    }
+      //------------------------ Boilerio valdymo pradžia ---------------------------------
+// boilerio siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Boilerio_siurblio_ijungimo_laikas ){
 #ifdef DEBUGboileris
-Serial.println("************ vykdoma programa Boileris() ********************");
+Serial.println("\n\n************ vykdoma programa Boileris() ********************");
 #endif
   Boilerio_sildymas();
   Boilerio_termostatas();
   Boilerio_siurblio_ijungimo_laikas=millis() + Boilerio_siurblio_pertrauka;}
-      //--------------------------------------------------------------------------    
-    
+      //------------------------ Boilerio valdymo pabaiga ----------------------------------  
+        
+//------------------------------ Akumuliacinės talpos valdymo pradžia -------------------
+// Akumuliacinės talpos siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
+   if (millis()> Akumuliacines_siurblio_ijungimo_laikas ){
+#ifdef DEBUG_akumuliacine
+Serial.println("\n\n************ vykdoma programa Akumuliacine_talpa() ********************");
+#endif
+Akumuliacine_talpa ();
+  Akumuliacines_siurblio_ijungimo_laikas=millis() + Akumuliacines_siurblio_pertrauka;}
+      //------------------------ Akumuliacinės talpos valdymo pabaiga -----------------------------    
+
+// tikrinama ar jau laikas tikrinti kolektoriaus siurblio būseną
+  if ((unsigned long)(currentMillis - previousMillis) >= config.k_intervalas * 1000)
+  { // įsimenamas paskutinio matavimo laikas
+    previousMillis = currentMillis;
+
 //------------------- Jei įjungtas nuorinimo režimas ------------------------------
 // arba apsauga nuo užšalimo ir kolektoriaus temperatūra artėja prie 0, įjungiamas siurblys
     if (config.k_nuorinimas == 1 or ((Kolektorius < 0.68) & (config.k_uzsalimas == 1)))
-    { digitalWrite(CollectorRELAYPIN, HIGH); RelayState = "Įjungtas";
+    { digitalWrite(CollectorRELAYPIN, Ijungta); RelayState = "Įjungtas";
       Serial.print("\nSiurblio rele įjungta ON (Nuorinimas, užšalimas)\n");
     } else {
       //Jei laikas sutampa su laiku, kai kolektoriaus šiluma niekinė, siurblys išjungiamas
       if (DateTime.hour == config.TurnOffHour or DateTime.hour == config.TurnOffHour + 1 )
-      { digitalWrite(CollectorRELAYPIN, LOW); RelayState = "Išjungtas(laikas)";
+      { digitalWrite(CollectorRELAYPIN, Isjungta); RelayState = "Išjungtas(laikas)";
         Serial.print("\nSiurblio rele įjungta OFF (nurodytas išjungimo laikas)\n");
       } else {
         Saules_Kolektoriaus_Siurblys();
       }
     }
+  }
 
-  
-  /* ****************************** emoncms ****************************** */
+
+// ---------------------- pamaisymo voztuvo darbas ---------------------------- //
+// 1- rankinis, 0- automatinis
+if (config.PV_rankinis_ijungimas == 0){
+  PamaisymoVoztuvoSiusblys();
+  PamaisymoVoztuvoDarbas();
+}
+  else {
+    digitalWrite(RadiatorPumpRELAYPIN, Isjungta); // siurblys išjungiamas
+    digitalWrite(MixingValveOffRELAYPIN, Isjungta); // vožtuvas nebevaldomas
+    digitalWrite(MixingValveOnRELAYPIN,Isjungta); // vožtuvas nebevaldomas
+    PamaisymoV_siurblio_busena = false;
+    }
+      //--------------------------------------------------------------------------    
+
+// ---------------------- emoncms ---------------------------- //  
   //ar aktyvuotas duomenų siuntimas į emoncms ir jau galima siųsti duomenis
   if ((config.emoncmsOn  == 1) & ((unsigned long)(currentMillis1 - previousMillis1) >= config.intervalasEmon * 1000))
   {
     // įsimenamas paskutinio matavimo laikas
     previousMillis1 = currentMillis1;
     emoncms();
-    //      postEmoncms();
   }
-#ifdef Diagnostika
+/*#ifdef Diagnostika
   // tikrinama ar jau laikas matuoti temperatūrą
   if (millis() - previousMillis2 >= 10000)
   { // įsimenamas paskutinio matavimo laikas
@@ -457,7 +504,7 @@ Serial.println("************ vykdoma programa Boileris() ********************");
 
     Serial.printf("\nFreeMem: %d \nDabar- %d:%d:%d %d.%d.%d \n", ESP.getFreeHeap(), DateTime.year, DateTime.month, DateTime.day, DateTime.hour, DateTime.minute, DateTime.second);
   }
-#endif
+#endif*/
   //  if (WiFi.mode(WIFI_STA))
   //    machineIOs.SetLeds(noChange, noChange, (((millis() / 125) & 7) == 0) ? On : Off); // 1 Hz blink with 12.5% duty cycle
   //  else

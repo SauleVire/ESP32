@@ -15,18 +15,18 @@ const char Page_PriskirtiDS18B20[] PROGMEM = R"=====(
 <table border="0"  cellspacing="0" cellpadding="3" >
 <tr><td align="center">Rasta</td><td align="center">Priskirta</td></tr>
 <tr><td align="left">t 0 : <span id="t0"></span></td><td align="right">Kolektorius: <input type="text" id="Kid" name="Kid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 1 : <span id="t1"></span></td><td align="right">Boileris: <input type="text" id="Bid" name="Bid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 2 : <span id="t2"></span></td><td align="right">Oras lauke: <input type="text" id="OLid" name="OLid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 3 : <span id="t3"></span></td><td align="right">Oras kambaryje: <input type="text" id="OKid" name="OKid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 4 : <span id="t4"></span></td><td align="right">Akumuliacinės apačia: <input type="text" id="AVid" name="AVid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 5 : <span id="t5"></span></td><td align="right">Akumuliacinės apačia: <input type="text" id="AAid" name="AAid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 6 : <span id="t6"></span></td><td align="right">Radijatorių termofikatas <input type="text" id="PVid" name="PVid" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="left">t 7 : <span id="t7"></span></td><td align="right">Katilas: <input type="text" id="KKKid" name="KKKid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 1 : <span id="t1"></span></td><td align="right">BoilerisV: <input type="text" id="BVid" name="BVid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 2 : <span id="t2"></span></td><td align="right">BoilerisA: <input type="text" id="BAid" name="BAid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 3 : <span id="t3"></span></td><td align="right">Oras lauke: <input type="text" id="OLid" name="OLid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 4 : <span id="t4"></span></td><td align="right">Oras kambaryje: <input type="text" id="OKid" name="OKid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 5 : <span id="t5"></span></td><td align="right">Akumuliacinės viršus: <input type="text" id="AVid" name="AVid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 6 : <span id="t6"></span></td><td align="right">Akumuliacinės apačia: <input type="text" id="AAid" name="AAid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 7 : <span id="t7"></span></td><td align="right">Radijatorių termofikatas <input type="text" id="PVid" name="PVid" size="2" maxlength="2" value=""></td></tr>
+<tr><td align="left">t 8 : <span id="t8"></span></td><td align="right">Katilas: <input type="text" id="KKKid" name="KKKid" size="2" maxlength="2" value=""></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="myButton" value="Įrašyti"></td></tr>
 </table>
 </form>
 <div align="center"><a href="/"   style="width:220px"  class="myButton" >Pradžia</a></div><br><br>
-<a href="https://saulevire.lt/emoncms9/dashboard/view/testas?apikey=read">sukaupti duomenys</a>
 </div></div>
 <script>
 window.onload = function ()
@@ -59,17 +59,19 @@ void send_PriskirtiDS18B20_html()
 
     //------------------------------------------------------
     for ( uint8_t i = 0; i < server.args(); i++ ) {
-      if (server.argName(i) == "Kid") config.Kid = server.arg(i).toInt();
-      if (server.argName(i) == "BVid") config.BVid = server.arg(i).toInt(); 
-      if (server.argName(i) == "OLid") config.OLid = server.arg(i).toInt(); 
-      if (server.argName(i) == "OKid") config.OKid = server.arg(i).toInt(); 
-      if (server.argName(i) == "AVid") config.AVid = server.arg(i).toInt(); 
-      if (server.argName(i) == "AAid") config.AAid = server.arg(i).toInt(); 
-      if (server.argName(i) == "PVid") config.PVid = server.arg(i).toInt(); 
+      if (server.argName(i) == "Kid")   config.Kid =   server.arg(i).toInt();
+      if (server.argName(i) == "BVid")  config.BVid =  server.arg(i).toInt(); 
+      if (server.argName(i) == "BAid")  config.BAid =  server.arg(i).toInt(); 
+      if (server.argName(i) == "OLid")  config.OLid =  server.arg(i).toInt(); 
+      if (server.argName(i) == "OKid")  config.OKid =  server.arg(i).toInt(); 
+      if (server.argName(i) == "AVid")  config.AVid =  server.arg(i).toInt(); 
+      if (server.argName(i) == "AAid")  config.AAid =  server.arg(i).toInt(); 
+      if (server.argName(i) == "PVid")  config.PVid =  server.arg(i).toInt(); 
       if (server.argName(i) == "KKKid") config.KKKid = server.arg(i).toInt(); 
     }
     //------------------------------------------------------
-    WriteConfigDS18b20();   
+    WriteConfigDS18b20();  
+    Temperaturos_matavimu_laikas = 0; 
     firstStart = true;
   }
   server.send ( 200, "text/html", Page_PriskirtiDS18B20 ); 
@@ -79,13 +81,14 @@ void send_PriskirtiDS18B20_html()
 void send_PriskirtiDS18B20_values_html()
 { 
   String values ="";
-  values += "Kid|" + (String) config.Kid + "|input\n";
-  values += "BVid|" + (String) config.BVid + "|input\n";
-  values += "OLid|" + (String) config.OLid + "|input\n";
-  values += "OKid|" + (String) config.OKid + "|input\n";
-  values += "AVid|" + (String) config.AVid + "|input\n";
-  values += "AAid|" + (String) config.AAid + "|input\n";
-  values += "PVid|" + (String) config.PVid + "|input\n";
+  values += "Kid|" +   (String) config.Kid +   "|input\n";
+  values += "BVid|" +  (String) config.BVid +  "|input\n";
+  values += "BAid|" +  (String) config.BAid +  "|input\n";
+  values += "OLid|" +  (String) config.OLid +  "|input\n";
+  values += "OKid|" +  (String) config.OKid +  "|input\n";
+  values += "AVid|" +  (String) config.AVid +  "|input\n";
+  values += "AAid|" +  (String) config.AAid +  "|input\n";
+  values += "PVid|" +  (String) config.PVid +  "|input\n";
   values += "KKKid|" + (String) config.KKKid + "|input\n";
       //------------------------------------------------------
 
