@@ -18,7 +18,7 @@ if (config.At_OFF_T < config.At_ON_T)
   // jei katilo temperatūra yra didesnė, negu nustatyta akumuliacinės talpos šildymo įjungimo temperatūra,
   // tai įjungiamas akumuliacinės talpos siurblys
  if ((Katilas >= config.At_ON_T) && (AkumuliacinesT_Siurblio_busena == false))  {
-   digitalWrite(HeatTanktRELAYPIN, Ijungta); // Įjungiamas akumuliacinės talpos siurblys
+   digitalWrite(HeatTanktRELAYpin, Ijungta); // Įjungiamas akumuliacinės talpos siurblys
    AkumuliacinesT_Siurblio_busena = true;
 #ifdef DEBUG_akumuliacine
 Serial.println("\n Akumuliacines talpos siublys IJUNGTAS *** ON ***");
@@ -27,7 +27,7 @@ Serial.println("\n Akumuliacines talpos siublys IJUNGTAS *** ON ***");
               // jei katilo išėjime yra mažiau šilumos, negu nustatyta akumuliacinės talpos šildymo išjungimo temperatūra,
               // tai išjungiamas akumuliacinės talpos siurblys
               if ((Katilas <= config.At_OFF_T) && (AkumuliacinesT_Siurblio_busena == true)){
-              digitalWrite(HeatTanktRELAYPIN, Isjungta); // Išjungiamas akumuliacinės talpos siurblys
+              digitalWrite(HeatTanktRELAYpin, Isjungta); // Išjungiamas akumuliacinės talpos siurblys
               AkumuliacinesT_Siurblio_busena = false;
               #ifdef DEBUG_akumuliacine
               Serial.println("\n Akumuliacines talpos siublys ISJUNGTAS *** OFF ***");

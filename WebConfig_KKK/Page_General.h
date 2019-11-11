@@ -52,16 +52,16 @@ const char PAGE_AdminGeneralSettings[] PROGMEM =  R"=====(
  
 
 window.onload = function ()
-{
-	load("style.css","css", function() 
-	{
-		load("microajax.js","js", function() 
-		{
-				setValues("/admin/generalvalues");
+{	load("style.css","css", function() 
+	{		load("microajax.js","js", function() 
+		{			setValues("/admin/generalvalues");
 		});
 	});
 }
-function load(e,t,n){if("js"==t){var a=document.createElement("script");a.src=e,a.type="text/javascript",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}else if("css"==t){var a=document.createElement("link");a.href=e,a.rel="stylesheet",a.type="text/css",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}}
+function load(e,t,n){if("js"==t){var a=document.createElement("script");
+a.src=e,a.type="text/javascript",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}
+else if("css"==t){var a=document.createElement("link");
+a.href=e,a.rel="stylesheet",a.type="text/css",a.async=!1,a.onload=function(){n()},document.getElementsByTagName("head")[0].appendChild(a)}}
 
 
 

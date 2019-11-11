@@ -70,8 +70,7 @@ struct strConfig {
 /* ********** kintamieji Boileriui ******************* */
   int Bo_ON_T; // temperatūra boilerio siurbliui įjungti
   int Bo_OFF_T; // temperatūra boilerio siurbliui įšjungti
-  boolean Bo_Rankinis_ijungimas; // Žymė rankiniam Boilerio siurblio valdymui
-  boolean Bo_Termostatas; // Žymė rankiniam termostato įjungimui
+  boolean Bo_Termostatas; // Žymė termostato įjungimui
    /* ********** kintamieji Akumuliacinei talpai ******************* */
   byte At_ON_T;//   temperatūra akumuliacines talpos siurbliui įjungti
   byte At_OFF_T;//  temperatūra akumuliacines talpos siurbliui įšjungti
@@ -138,9 +137,9 @@ float KolektoriusOld=0, BoilerisVOld=0, BoilerisAOld=0, OrasLOld=0, OrasKOld=0, 
 boolean SK_siurblys = false;
 boolean PamaisymoV_siurblio_busena = false;
 boolean AkumuliacinesT_Siurblio_busena = false; //akumuliacinės talpos siurblio būsena  0-išjungta, 1-įjungta
-boolean Boilerio_Siurblio_busena = false;
+bool Boilerio_Siurblio_busena = 0;
 
-boolean Boilerio_Termostato_busena = false; // Žymė termostato busenai
+bool Boilerio_Termostato_busena = 0; // Žymė termostato busenai
  
 #define REQUEST_freezing 5000   // 5000 millis= 5 sekundės
 static long timer_freezing=0;   // apsaugos nuo užšalimo tikrinimo laikas
@@ -188,13 +187,13 @@ String FreezingState = "Išjungta";
 #define Ijungta HIGH
 #define Isjungta LOW
 
-#define CollectorRELAYPIN 2 //išvadas kolektoriaus siurblio junginėjimui
-#define BoilerRELAYPIN 32 // išvadas boilerio siurbliui, Relė 1
-#define BoilerThermostatRELAYPIN 33 // išvadas boilerio termostatui, Relė 2
-#define HeatTanktRELAYPIN 27 // išvadas ak. talpos siurblio junginėjimui, Relė 3
-#define RadiatorPumpRELAYPIN 14 // išvadas radijatorių siurbliui, Relė 4
-#define MixingValveOffRELAYPIN 13 // PV uždarymas Relė 5
-#define MixingValveOnRELAYPIN 12 // PV atidarymas Relė 6
+#define CollectorRELAYpin 2 //išvadas kolektoriaus siurblio junginėjimui, Relė
+#define BoilerRELAYpin 32 // išvadas boilerio siurbliui, Relė 
+#define BoilerThermostatRELAYpin 33 // išvadas boilerio termostatui, Relė 
+#define HeatTanktRELAYpin 27 // išvadas ak. talpos siurblio junginėjimui, Relė 
+#define RadiatorPumpRELAYpin 14 // išvadas radijatorių siurbliui, Relė 
+#define MixingValveOffRELAYpin 13 // išvadas PV uždarymo, Relė 
+#define MixingValveOnRELAYpin 12 // išvadas PV atidarymo, Relė 
 /*
 **
 ** emoncms duomenų siuntimas
@@ -402,7 +401,7 @@ void ReadConfigCollector()
 void WriteConfigBoiler()
 {  EEPROM.write(174,config.Bo_ON_T);
   EEPROM.write(175,config.Bo_OFF_T);
-  EEPROM.write(176,config.Bo_Rankinis_ijungimas);
+//  EEPROM.write(176,config.Bo_Rankinis_ijungimas);
   EEPROM.write(177,config.Bo_Termostatas);
 //  EEPROM.write(178,config.Bo_Termostato_busena);
         EEPROM.commit();}
@@ -410,7 +409,7 @@ void WriteConfigBoiler()
 void ReadConfigBoiler()
 {   config.Bo_ON_T = EEPROM.read(174);
     config.Bo_OFF_T = EEPROM.read(175);
-    config.Bo_Rankinis_ijungimas = EEPROM.read(176);
+//    config.Bo_Rankinis_ijungimas = EEPROM.read(176);
     config.Bo_Termostatas = EEPROM.read(177);
 //    config.Bo_Termostato_busena = EEPROM.read(178);
 } //

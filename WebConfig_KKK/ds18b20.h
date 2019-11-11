@@ -79,68 +79,27 @@ void TemteraturosMatavimas() {
   Katilas = DS18B20.getTempC(devAddr[config.KKKid]);
 
   // Check if any reads failed and exit
-  if (Kolektorius == -127 or Kolektorius == 85 or Kolektorius > 127 ) {
-    Kolektorius = KolektoriusOld;
 #ifdef DEBUGds18b20
+if (Kolektorius == -127 or Kolektorius == 85 or Kolektorius > 127 ) 
 Serial.println("Klaida! Kolektorius rodmenys neteisingi");  
-#endif
-   } else { KolektoriusOld = Kolektorius;}
-
-  if (BoilerisV == -127 or BoilerisV == 85 or BoilerisV > 127 ) {
-    BoilerisV = BoilerisVOld;
-#ifdef DEBUGds18b20
+if (BoilerisV == -127 or BoilerisV == 85 or BoilerisV > 127 ) 
     Serial.println("Klaida! BoilerisV rodmenys neteisingi");  
-#endif
-   } else { BoilerisVOld = BoilerisV;}
-
-  if (BoilerisA == -127 or BoilerisA == 85 or BoilerisA > 127 ) {
-    BoilerisA = BoilerisAOld;
-#ifdef DEBUGds18b20
+if (BoilerisA == -127 or BoilerisA == 85 or BoilerisA > 127 ) 
     Serial.println("Klaida! BoilerisA rodmenys neteisingi");  
-#endif
-   } else { BoilerisAOld = BoilerisA;}
-
-  if (OrasL == -127 or OrasL == 85 or OrasL > 127 ) {
-    OrasL = OrasLOld;
-#ifdef DEBUGds18b20
+if (OrasL == -127 or OrasL == 85 or OrasL > 127 )
     Serial.println("Klaida! OrasL rodmenys neteisingi");  
-#endif
-   } else { OrasLOld = OrasL;}
-
-  if (OrasK == -127 or OrasK == 85 or OrasK > 127 ) {
-    OrasK = OrasKOld;
-#ifdef DEBUGds18b20
+if (OrasK == -127 or OrasK == 85 or OrasK > 127 ) 
     Serial.println("Klaida! OrasK rodmenys neteisingi");  
-#endif
-   } else { OrasKOld = OrasK;}
-
-  if (Katilas == -127 or Katilas == 85 or Katilas > 127 ) {
-    Katilas = KatilasOld;
-#ifdef DEBUGds18b20
+if (Katilas == -127 or Katilas == 85 or Katilas > 127 ) 
     Serial.println("Klaida! Katilas rodmenys neteisingi");  
-#endif
-   } else { KatilasOld = Katilas;}
-
-  if (AkumuliacineV == -127 or AkumuliacineV == 85 or AkumuliacineV > 127 ) {
-    AkumuliacineV = AkumuliacineVOld;
-#ifdef DEBUGds18b20
+if (AkumuliacineV == -127 or AkumuliacineV == 85 or AkumuliacineV > 127 ) 
     Serial.println("Klaida! AkumuliacineV rodmenys neteisingi");  
-#endif
-   } else { AkumuliacineVOld = AkumuliacineV;}
-
-  if (AkumuliacineA == -127 or AkumuliacineA == 85 or AkumuliacineA > 127 ) {
-    AkumuliacineA = AkumuliacineAOld;
-#ifdef DEBUGds18b20
+if (AkumuliacineA == -127 or AkumuliacineA == 85 or AkumuliacineA > 127 ) 
     Serial.println("Klaida! AkumuliacineA rodmenys neteisingi");  
-#endif
-   } else { AkumuliacineAOld = AkumuliacineA;}
-
-  if (PVoztuvas == -127 or PVoztuvas == 85 or PVoztuvas > 127 ) {
-    PVoztuvas = PVoztuvasOld;
-#ifdef DEBUGds18b20
+if (PVoztuvas == -127 or PVoztuvas == 85 or PVoztuvas > 127 ) 
     Serial.println("Klaida! Ds18B20 rodmenys neteisingi");  
 #endif
-   } else { PVoztuvasOld = PVoztuvas;}
+
 
   DS18B20.requestTemperatures();
   

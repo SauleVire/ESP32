@@ -19,14 +19,14 @@ void Saules_Kolektoriaus_Siurblys(){
   Serial.print("\nmilliseconds ("); Serial.print((Output * 100.0) / config.WindowSize, 0);  Serial.println("%)");
   #endif
   if ((Output < (millis() - windowStartTime) / 1000) ) 
-      { digitalWrite(CollectorRELAYPIN, Ijungta); 
+      { digitalWrite(CollectorRELAYpin, Ijungta); 
       CollectorRelayState = "Įjungtas";
   #ifdef DEBUG_Kolektorius
   Serial.print("\nSiurblio rele įjungta ON (Siurblio ciklas)\n");
   #endif
   }
   else 
-      { digitalWrite(CollectorRELAYPIN, Isjungta); 
+      { digitalWrite(CollectorRELAYpin, Isjungta); 
       CollectorRelayState = "Išjungta";
   #ifdef DEBUG_Kolektorius
   Serial.print("\nSiurblio rele išjungta OFF (Siurblio ciklas)\n");
@@ -39,7 +39,7 @@ void Saules_Kolektoriaus_Siurblys(){
   // Tikrinama ar įjungta ir reikalinga k_uzsalimas nuo užšalimo
 void k_uzsalimas(){
       if (((Kolektorius < 0.25) & (config.k_uzsalimas == 1)) or (config.k_nuorinimas == 1)) {
-        digitalWrite(CollectorRELAYPIN, Ijungta); 
+        digitalWrite(CollectorRELAYpin, Ijungta); 
         CollectorRelayState = "Įjungta ";
   #ifdef DEBUG_Kolektorius
   Serial.print("\nSiurblio rele įjungta ON (Apsaugos ciklas)\n");

@@ -12,7 +12,6 @@ const char PAGE_BoilerioKonfiguracija[] PROGMEM = R"=====(
 <table border="0"  cellspacing="0" cellpadding="3" >
 <tr><td align="right">Boilerio įjungimo t (°C) :</td><td><input type="text" id="Bo_ON_T" name="Bo_ON_T" min="1" max="30" size="2" maxlength="2" value=""></td></tr>
 <tr><td align="right">Boilerio išjungimo t (°C) :</td><td><input type="text" id="Bo_OFF_T" name="Bo_OFF_T" min="1" max="20" size="2" maxlength="2" value=""></td></tr>
-<tr><td align="right">Įjungti dabar :</td><td><input type="checkbox" id="Bo_Rankinis_ijungimas" name="Bo_Rankinis_ijungimas"></td></tr>
 <tr><td align="right">Termostatas :</td><td><input type="checkbox" id="Bo_termostatas" name="Bo_termostatas"></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="myButton" value="Įrašyti"></td></tr>
 
@@ -23,7 +22,7 @@ const char PAGE_BoilerioKonfiguracija[] PROGMEM = R"=====(
 <div align="left">
 <span class="textas">Boilerio įjungimo t (°C)</span><span class="textas1">- jei temperatūra žemesnė, o katile yra šilumos daugiau, įjungiamas boilerio siurbys.</span><br><br>
 <span class="textas">Boilerio išjungimo t (°C)</span></span><span class="textas1">- pasiekus nustatytą temperatūrą boilerio siurbys išjungiamas.<br><br>
-<span class="textas">Įjungti dabar</span></span><span class="textas1">- pažymėjus įjungiamas boilerio šildymas elektra.</span></div>
+<span class="textas">Termostatas</span></span><span class="textas1">- pažymėjus įjungiamas boilerio šildymas elektra.</span></div>
 
 
 </div></div>
@@ -57,13 +56,11 @@ void send_BoilerioKonfiguracija_html()
 {
   if (server.args() > 0 )  // Save Settings
   {
-    config.Bo_Rankinis_ijungimas = false;
     config.Bo_Termostatas = false;
     ThermostatRelayState = "Išjungta";
     for ( uint8_t i = 0; i < server.args(); i++ ) {
       if (server.argName(i) == "Bo_ON_T") config.Bo_ON_T = server.arg(i).toInt();
       if (server.argName(i) == "Bo_OFF_T") config.Bo_OFF_T =  server.arg(i).toInt(); 
-      if (server.argName(i) == "Bo_Rankinis_ijungimas") config.Bo_Rankinis_ijungimas = true; 
       if (server.argName(i) == "Bo_termostatas") {config.Bo_Termostatas = true; ThermostatRelayState = "Įjungta";}
 
     }
@@ -81,7 +78,6 @@ void send_BoilerioKonfiguracija_values_html()
   String values ="";
   values += "Bo_ON_T|" + (String) config.Bo_ON_T + "|input\n";
   values += "Bo_OFF_T|" + (String) config.Bo_OFF_T + "|input\n";
-  values += "Bo_Rankinis_ijungimas|" + (String) (config.Bo_Rankinis_ijungimas ? "checked" : "") + "|chk\n";
   values += "Bo_termostatas|" + (String) (config.Bo_Termostatas ? "checked" : "") + "|chk\n";
 
 
@@ -89,7 +85,6 @@ void send_BoilerioKonfiguracija_values_html()
   Serial.println(__FUNCTION__);
   Serial.print("Bo_ON_T : ");Serial.println(config.Bo_ON_T); 
   Serial.print("Bo_OFF_T : ");Serial.println(config.Bo_OFF_T); 
-  Serial.print("Bo_Rankinis_ijungimas : ");Serial.println(config.Bo_Rankinis_ijungimas); 
   Serial.print("Bo_Termostatas : ");Serial.println(config.Bo_Termostatas); 
 
   

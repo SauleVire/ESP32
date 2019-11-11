@@ -1,6 +1,7 @@
 
 //------------------------------------------
 void Page_DS18B20(){
+  SetupDS18B20();
   String message = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   message += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
   message += "<link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\">\n";

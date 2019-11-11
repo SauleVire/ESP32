@@ -1,3 +1,4 @@
+
 /*
   Based on  ESP_WebConfig Copyright (c) 2015 John Lassen. All rights reserved
   ------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@
 #include "global.h"
 #include "ds18b20.h"
 #include <SimpleTimer.h>
-
+#include "Relay.h"
 /*
   Include the HTML, STYLE and Script "Pages"
 */
@@ -78,7 +79,7 @@
 #include "Page_PriskirtiDS18B20.h"
 #include "Page_Pvoztuvas.h"
 
-#define DEBUG_Kolektorius 1 // Naudojama tik testavimui
+// #define DEBUG_Kolektorius 1 // Naudojama tik testavimui
 #define DEBUGpv 1 // Naudojama tik testavimui
 #define DEBUG_akumuliacine 1 // Naudojama tik testavimui
 #define DEBUGboileris 1 // Naudojama tik testavimui
@@ -92,18 +93,34 @@
 SimpleTimer timer;
 const char* host = "SauleVire";
 
+// #define CollectorRELAYpin 2 //išvadas kolektoriaus siurblio junginėjimui, Relė
+// #define BoilerRELAYpin 32 // išvadas boilerio siurbliui, Relė 
+// #define BoilerThermostatRELAYpin 33 // išvadas boilerio termostatui, Relė 
+// #define HeatTanktRELAYpin 27 // išvadas ak. talpos siurblio junginėjimui, Relė 
+// #define RadiatorPumpRELAYpin 14 // išvadas radijatorių siurbliui, Relė 
+// #define MixingValveOffRELAYpin 13 // išvadas PV uždarymo, Relė 
+// #define MixingValveOnRELAYpin 12 // išvadas PV atidarymo, Relė 
+  
+Relay BoilerRELAY(BoilerRELAYpin, false);
+Relay BoilerThermostatRELAY(BoilerThermostatRELAYpin, false);
 
 void setup ( void ) {
+
+  BoilerRELAY.begin(); // inicializes the pin
+  BoilerThermostatRELAY.begin(); // inicializes the pin
+
+
   EEPROM.begin(4096);
-  pinMode(2, OUTPUT);
-  pinMode(32, OUTPUT);
-  pinMode(33, OUTPUT);
-  pinMode(25, OUTPUT);
-  pinMode(26, OUTPUT);
-  pinMode(27, OUTPUT);
-  pinMode(14, OUTPUT);
-  pinMode(13, OUTPUT);
-  pinMode(12, OUTPUT);
+  pinMode(CollectorRELAYpin, OUTPUT);
+//  pinMode(BoilerRELAYpin, OUTPUT);
+//  pinMode(BoilerThermostatRELAYpin, OUTPUT);
+  //  pinMode(25, OUTPUT);
+  //  pinMode(26, OUTPUT);
+  pinMode(HeatTanktRELAYpin, OUTPUT);
+  pinMode(RadiatorPumpRELAYpin, OUTPUT);
+  pinMode(MixingValveOffRELAYpin, OUTPUT);
+  pinMode(MixingValveOnRELAYpin, OUTPUT);
+  
 #ifdef Diagnostika
   Serial.begin(115200);
   Serial.println("Čia SauleVire.lt pradžia\n");
@@ -144,7 +161,7 @@ void setup ( void ) {
     /* ********** kintamieji Boileriui ******************* */
     config.Bo_ON_T = 45; // temperatūra boilerio siurbliui įjungti
     config.Bo_OFF_T = 65; // temperatūra boilerio siurbliui įšjungti
-    config.Bo_Rankinis_ijungimas = false; // Žymė rankiniam AT siurblio valdymui
+//    config.Bo_Rankinis_ijungimas = false; // Žymė rankiniam AT siurblio valdymui
     config.Bo_Termostatas = false; // Žymė rankiniam termostato įjungimui
 //    config.Bo_Termostato_busena = false; // Žymė termostato busenai
     /* ********** kintamieji Akumuliacinei talpai ******************* */
@@ -322,7 +339,7 @@ void setup ( void ) {
   myPID.SetMode(AUTOMATIC);
   //  timer.setInterval(15000L, KolektoriusT);
 
-  pinMode(CollectorRELAYPIN, OUTPUT);
+  pinMode(CollectorRELAYpin, OUTPUT);
 
 }
 
@@ -390,11 +407,6 @@ if (PV_uzdarinejamas = true)   Serial.println("Pamaisymo voztuvas UZDARINEJAMAS"
     Serial.printf("\nFreeMem: %d \nDabar- %d:%d:%d %d.%d.%d \n", ESP.getFreeHeap(), DateTime.year, DateTime.month, DateTime.day, DateTime.hour, DateTime.minute, DateTime.second);
 Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
 
-//  if (WiFi.status() != WL_CONNECTED) {
-//      Serial.println("Reconnecting to WiFi...");
-//      WiFi.disconnect();
-//      WiFi.begin (config.ssid.c_str(), config.password.c_str());}
-
 #endif
   } 
 
@@ -406,13 +418,13 @@ Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
 // boilerio siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Boilerio_siurblio_ijungimo_laikas ){
 #ifdef DEBUGboileris
-Serial.println("\n\n************ vykdoma programa Boileris() ********************");
+Serial.println("\n************ vykdoma programa Boileris() ********************\n");
 #endif
   Boilerio_sildymas();
   Boilerio_termostatas();
   Boilerio_siurblio_ijungimo_laikas=millis() + Boilerio_siurblio_pertrauka;}
       //------------------------ Boilerio valdymo pabaiga ----------------------------------  
-        
+/*
 //------------------------------ Akumuliacinės talpos valdymo pradžia -------------------
 // Akumuliacinės talpos siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Akumuliacines_siurblio_ijungimo_laikas ){
@@ -422,6 +434,7 @@ Serial.println("\n\n************ vykdoma programa Akumuliacine_talpa() *********
 Akumuliacine_talpa ();
   Akumuliacines_siurblio_ijungimo_laikas=millis() + Akumuliacines_siurblio_pertrauka;}
       //------------------------ Akumuliacinės talpos valdymo pabaiga -----------------------------    
+      //------------------------ Kolektoriaus valdymo ppradžia -----------------------------    
 
 // tikrinama ar jau laikas tikrinti kolektoriaus siurblio būseną
   if ((unsigned long)(currentMillis - previousMillis) >= config.k_intervalas * 1000)
@@ -431,20 +444,21 @@ Akumuliacine_talpa ();
 //------------------- Jei įjungtas nuorinimo režimas ------------------------------
 // arba apsauga nuo užšalimo ir kolektoriaus temperatūra artėja prie 0, įjungiamas siurblys
     if (config.k_nuorinimas == 1 or ((Kolektorius < 0.68) & (config.k_uzsalimas == 1)))
-    { digitalWrite(CollectorRELAYPIN, Ijungta); CollectorRelayState = "Įjungtas";
+    { digitalWrite(CollectorRELAYpin, Ijungta); CollectorRelayState = "Įjungtas";
       Serial.print("\nSiurblio rele įjungta ON (Nuorinimas, užšalimas)\n");
     } else {
       //Jei laikas sutampa su laiku, kai kolektoriaus šiluma niekinė, siurblys išjungiamas
       if (DateTime.hour == config.TurnOffHour or DateTime.hour == config.TurnOffHour + 1 )
-      { digitalWrite(CollectorRELAYPIN, Isjungta); CollectorRelayState = "Išjungtas(laikas)";
+      { digitalWrite(CollectorRELAYpin, Isjungta); CollectorRelayState = "Išjungtas(laikas)";
         Serial.print("\nSiurblio rele įjungta OFF (nurodytas išjungimo laikas)\n");
       } else {
         Saules_Kolektoriaus_Siurblys();
       }
     }
   }
-
-
+      //------------------------ Kolektoriaus valdymo pradžia -----------------------------    
+*/
+/*
 // ---------------------- pamaisymo voztuvo darbas ---------------------------- //
 // 1- rankinis, 0- automatinis
 if (config.PV_rankinis_ijungimas == 0){
@@ -452,13 +466,14 @@ if (config.PV_rankinis_ijungimas == 0){
   PamaisymoVoztuvoDarbas();
 }
   else {
-    digitalWrite(RadiatorPumpRELAYPIN, Isjungta); // siurblys išjungiamas
-    digitalWrite(MixingValveOffRELAYPIN, Isjungta); // vožtuvas nebevaldomas
-    digitalWrite(MixingValveOnRELAYPIN,Isjungta); // vožtuvas nebevaldomas
+    digitalWrite(RadiatorPumpRELAYpin, Isjungta); // siurblys išjungiamas
+    digitalWrite(MixingValveOffRELAYpin, Isjungta); // vožtuvas nebevaldomas
+    digitalWrite(MixingValveOnRELAYpin,Isjungta); // vožtuvas nebevaldomas
     PamaisymoV_siurblio_busena = false;
     }
       //--------------------------------------------------------------------------    
-
+*/
+/*
 // ---------------------- emoncms ---------------------------- //  
   //ar aktyvuotas duomenų siuntimas į emoncms ir jau galima siųsti duomenis
   if ((config.emoncmsOn  == 1) & ((unsigned long)(currentMillis1 - previousMillis1) >= config.intervalasEmon * 1000))
@@ -467,13 +482,8 @@ if (config.PV_rankinis_ijungimas == 0){
     previousMillis1 = currentMillis1;
     emoncms();
   }
+*/
 
-  //  if (WiFi.mode(WIFI_STA))
-  //    machineIOs.SetLeds(noChange, noChange, (((millis() / 125) & 7) == 0) ? On : Off); // 1 Hz blink with 12.5% duty cycle
-  //  else
-  //    machineIOs.SetLeds(noChange, noChange, (((millis() / 125) & 7) != 0) ? On : Off); // 1 Hz blink with 87.5% duty cycle
-  //  machine.ModulateSound(((millis() / 63) & 7) == 0); // 2 Hz blink with 12.5% duty cycle (1.984... Hz)
-  /****************************************************************/
 
 
   timer.run();
