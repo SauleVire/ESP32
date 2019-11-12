@@ -80,9 +80,9 @@
 #include "Page_Pvoztuvas.h"
 
 // #define DEBUG_Kolektorius 1 // Naudojama tik testavimui
-#define DEBUGpv 1 // Naudojama tik testavimui
+// #define DEBUGpv 1 // Naudojama tik testavimui
 #define DEBUG_akumuliacine 1 // Naudojama tik testavimui
-#define DEBUGboileris 1 // Naudojama tik testavimui
+// #define DEBUGboileris 1 // Naudojama tik testavimui
 #define DEBUGbusena 1 // Naudojama tik testavimui
 #define DEBUGds18b20 1 // Naudojama tik testavimui
 #define Diagnostika 0 // Naudojama tik testavimui
@@ -103,11 +103,14 @@ const char* host = "SauleVire";
   
 Relay BoilerRELAY(BoilerRELAYpin, false);
 Relay BoilerThermostatRELAY(BoilerThermostatRELAYpin, false);
+Relay HeatTankRELAY(HeatTankRELAYpin, false);
 
 void setup ( void ) {
 
   BoilerRELAY.begin(); // inicializes the pin
   BoilerThermostatRELAY.begin(); // inicializes the pin
+  HeatTankRELAY.begin(); // inicializes the pin
+  
 
 
   EEPROM.begin(4096);
@@ -116,7 +119,7 @@ void setup ( void ) {
 //  pinMode(BoilerThermostatRELAYpin, OUTPUT);
   //  pinMode(25, OUTPUT);
   //  pinMode(26, OUTPUT);
-  pinMode(HeatTanktRELAYpin, OUTPUT);
+//  pinMode(HeatTanktRELAYpin, OUTPUT);
   pinMode(RadiatorPumpRELAYpin, OUTPUT);
   pinMode(MixingValveOffRELAYpin, OUTPUT);
   pinMode(MixingValveOnRELAYpin, OUTPUT);
@@ -414,7 +417,7 @@ Temperaturos_matavimu_laikas = millis()+config.k_intervalas * 1000;
   unsigned long currentMillis = millis();
   unsigned long currentMillis1 = millis();
 
-      //------------------------ Boilerio valdymo pradžia ---------------------------------
+/*      //------------------------ Boilerio valdymo pradžia ---------------------------------
 // boilerio siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Boilerio_siurblio_ijungimo_laikas ){
 #ifdef DEBUGboileris
@@ -424,7 +427,7 @@ Serial.println("\n************ vykdoma programa Boileris() ********************\
   Boilerio_termostatas();
   Boilerio_siurblio_ijungimo_laikas=millis() + Boilerio_siurblio_pertrauka;}
       //------------------------ Boilerio valdymo pabaiga ----------------------------------  
-/*
+*/
 //------------------------------ Akumuliacinės talpos valdymo pradžia -------------------
 // Akumuliacinės talpos siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Akumuliacines_siurblio_ijungimo_laikas ){
@@ -457,7 +460,7 @@ Akumuliacine_talpa ();
     }
   }
       //------------------------ Kolektoriaus valdymo pradžia -----------------------------    
-*/
+
 /*
 // ---------------------- pamaisymo voztuvo darbas ---------------------------- //
 // 1- rankinis, 0- automatinis

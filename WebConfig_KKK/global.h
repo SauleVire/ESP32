@@ -190,7 +190,7 @@ String FreezingState = "Išjungta";
 #define CollectorRELAYpin 2 //išvadas kolektoriaus siurblio junginėjimui, Relė
 #define BoilerRELAYpin 32 // išvadas boilerio siurbliui, Relė 
 #define BoilerThermostatRELAYpin 33 // išvadas boilerio termostatui, Relė 
-#define HeatTanktRELAYpin 27 // išvadas ak. talpos siurblio junginėjimui, Relė 
+#define HeatTankRELAYpin 27 // išvadas ak. talpos siurblio junginėjimui, Relė 
 #define RadiatorPumpRELAYpin 14 // išvadas radijatorių siurbliui, Relė 
 #define MixingValveOffRELAYpin 13 // išvadas PV uždarymo, Relė 
 #define MixingValveOnRELAYpin 12 // išvadas PV atidarymo, Relė 
