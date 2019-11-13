@@ -206,24 +206,7 @@ String FreezingState = "Išjungta";
 ** CONFIGURATION HANDLING
 **
 */
-/*void ConfigureWifi()
-{
-  Serial.println("Configuring Wifi");
-  WiFi.begin (config.ssid.c_str(), config.password.c_str());
-  WiFi.setHostname("SauleVire");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print("."); //Serial.print(WiFi.status());
-  }
-  Serial.print("\nWiFi connected   IP: "); Serial.println(WiFi.localIP());
-  if (!config.dhcp)
-  {
-  WiFi.config(IPAddress(config.IP[0],config.IP[1],config.IP[2],config.IP[3] ),  IPAddress(config.DNS[0],config.DNS[1],config.DNS[2],config.DNS[3] ),  IPAddress(config.Gateway[0],config.Gateway[1],config.Gateway[2],config.Gateway[3] ) , IPAddress(config.Netmask[0],config.Netmask[1],config.Netmask[2],config.Netmask[3] ));
-  Serial.println("Statinis adresas: " + WiFi.localIP().toString()+ "\n");
-  Serial.print("SSID'as: " + String(config.ssid) + "\n");
-  Serial.print("Slaptažodis: " + String(config.password) + "\n\n");
-  }
-}*/
+
 
 void ConfigureWifi()
 {

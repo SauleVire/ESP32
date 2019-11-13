@@ -80,8 +80,8 @@
 #include "Page_Pvoztuvas.h"
 
 // #define DEBUG_Kolektorius 1 // Naudojama tik testavimui
-// #define DEBUGpv 1 // Naudojama tik testavimui
-#define DEBUG_akumuliacine 1 // Naudojama tik testavimui
+#define DEBUGpv 1 // Naudojama tik testavimui
+//#define DEBUG_akumuliacine 1 // Naudojama tik testavimui
 // #define DEBUGboileris 1 // Naudojama tik testavimui
 #define DEBUGbusena 1 // Naudojama tik testavimui
 #define DEBUGds18b20 1 // Naudojama tik testavimui
@@ -104,25 +104,30 @@ const char* host = "SauleVire";
 Relay BoilerRELAY(BoilerRELAYpin, false);
 Relay BoilerThermostatRELAY(BoilerThermostatRELAYpin, false);
 Relay HeatTankRELAY(HeatTankRELAYpin, false);
+Relay MixingValveOffRELAY(MixingValveOffRELAYpin, false);
+Relay MixingValveOnRELAY(MixingValveOnRELAYpin, false);
+Relay RadiatorPumpRELAY(RadiatorPumpRELAYpin, false);
 
 void setup ( void ) {
 
   BoilerRELAY.begin(); // inicializes the pin
   BoilerThermostatRELAY.begin(); // inicializes the pin
   HeatTankRELAY.begin(); // inicializes the pin
+  MixingValveOffRELAY.begin(); // inicializes the pin
+  MixingValveOnRELAY.begin(); // inicializes the pin
+  RadiatorPumpRELAY.begin(); // inicializes the pin
   
 
 
   EEPROM.begin(4096);
-  pinMode(CollectorRELAYpin, OUTPUT);
+//  pinMode(CollectorRELAYpin, OUTPUT);
 //  pinMode(BoilerRELAYpin, OUTPUT);
 //  pinMode(BoilerThermostatRELAYpin, OUTPUT);
-  //  pinMode(25, OUTPUT);
-  //  pinMode(26, OUTPUT);
 //  pinMode(HeatTanktRELAYpin, OUTPUT);
-  pinMode(RadiatorPumpRELAYpin, OUTPUT);
-  pinMode(MixingValveOffRELAYpin, OUTPUT);
-  pinMode(MixingValveOnRELAYpin, OUTPUT);
+//  pinMode(RadiatorPumpRELAYpin, OUTPUT);
+//  pinMode(MixingValveOffRELAYpin, OUTPUT);
+//  pinMode(MixingValveOnRELAYpin, OUTPUT);
+
   
 #ifdef Diagnostika
   Serial.begin(115200);
@@ -428,6 +433,7 @@ Serial.println("\n************ vykdoma programa Boileris() ********************\
   Boilerio_siurblio_ijungimo_laikas=millis() + Boilerio_siurblio_pertrauka;}
       //------------------------ Boilerio valdymo pabaiga ----------------------------------  
 */
+/*
 //------------------------------ Akumuliacinės talpos valdymo pradžia -------------------
 // Akumuliacinės talpos siurblio paleidimas/stabdymas tikrinami kas 1 min (kintamasis Boilerio_siurblio_pertrauka)
    if (millis()> Akumuliacines_siurblio_ijungimo_laikas ){
@@ -436,7 +442,9 @@ Serial.println("\n\n************ vykdoma programa Akumuliacine_talpa() *********
 #endif
 Akumuliacine_talpa ();
   Akumuliacines_siurblio_ijungimo_laikas=millis() + Akumuliacines_siurblio_pertrauka;}
-      //------------------------ Akumuliacinės talpos valdymo pabaiga -----------------------------    
+      //------------------------ Akumuliacinės talpos valdymo pabaiga -----------------------------  
+*/
+/*        
       //------------------------ Kolektoriaus valdymo ppradžia -----------------------------    
 
 // tikrinama ar jau laikas tikrinti kolektoriaus siurblio būseną
@@ -459,9 +467,10 @@ Akumuliacine_talpa ();
       }
     }
   }
-      //------------------------ Kolektoriaus valdymo pradžia -----------------------------    
+      //------------------------ Kolektoriaus valdymo pabaiga ----------------------------- 
+      */   
 
-/*
+
 // ---------------------- pamaisymo voztuvo darbas ---------------------------- //
 // 1- rankinis, 0- automatinis
 if (config.PV_rankinis_ijungimas == 0){
@@ -469,13 +478,16 @@ if (config.PV_rankinis_ijungimas == 0){
   PamaisymoVoztuvoDarbas();
 }
   else {
-    digitalWrite(RadiatorPumpRELAYpin, Isjungta); // siurblys išjungiamas
-    digitalWrite(MixingValveOffRELAYpin, Isjungta); // vožtuvas nebevaldomas
-    digitalWrite(MixingValveOnRELAYpin,Isjungta); // vožtuvas nebevaldomas
+    RadiatorPumpRELAY.turnOff(); // siurblys išjungiamas
+    MixingValveOffRELAY.turnOff(); // vožtuvas nebevaldomas
+    MixingValveOnRELAY.turnOff(); // vožtuvas nebevaldomas
     PamaisymoV_siurblio_busena = false;
+    #ifdef DEBUGpv
+Serial.println("Pamaisymo voztuvas ir siublys NEVALDOMI");
+#endif
     }
       //--------------------------------------------------------------------------    
-*/
+
 /*
 // ---------------------- emoncms ---------------------------- //  
   //ar aktyvuotas duomenų siuntimas į emoncms ir jau galima siųsti duomenis
