@@ -8,9 +8,9 @@ void Akumuliacine_talpa () {
               else Serial.print("\nAT siublio busena: ISJUNGTAS *** OFF ***");
               Serial.print("\nKatilo temperatura- ");Serial.print(Katilas);Serial.print("°C\n\n");
               #endif
-// jei AT išjungimo temperatūra nustatoma mažesnėė, negu įjungimo, tai ji keičiama į didesnę
-if (config.At_OFF_T < config.At_ON_T) 
-    {config.At_OFF_T = config.At_ON_T + 1;
+// jei AT išjungimo temperatūra nustatoma didesnė, negu įjungimo, tai ji keičiama į mažesnę
+if (config.At_OFF_T > config.At_ON_T) 
+    {config.At_OFF_T = config.At_ON_T - 1;
     WriteConfigHeatStorageTank();
     Serial.print("\n Pakeista AT ON temperatūraDEBUG_akumuliacine\n");
     }
